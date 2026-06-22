@@ -5,6 +5,7 @@ const AuthRoute = require("./src/modules/auth/Auth.routes");
 const server = express();
 const PORT = process.env.PORT || 3001;
 const cors = require("cors");
+const errorHandler = require("./src/middlewares/errors/errorHandler")
 const pc = require("picocolors");
 
 server.use(cors());
@@ -19,4 +20,5 @@ const initServer = async () => {
     );
   });
 };
+server.use(errorHandler)
 initServer();

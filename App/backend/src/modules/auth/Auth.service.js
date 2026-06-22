@@ -1,5 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const HttpException = require("../../exception/index");
 
 const UsersSchema = require("../users/Users.schema");
 
@@ -11,7 +12,7 @@ const registerUser = async (body) => {
   });
 
   if (user) {
-    throw new Error("User already registered");
+    throw new HttpException("User already registered", 400);
   }
   const newUser = new UsersSchema({
     username,
@@ -29,12 +30,12 @@ const login = async (body) => {
   const user = await UsersSchema.findOne({ email });
 
   if (!user) {
-    throw new Error("Wrong email or password");
+    throw new HttpException("Wrong email or password", 401);
   }
 
   const isPasswordValid = await bcrypt.compare(password, user.password_hash);
   if (!isPasswordValid) {
-    throw new Error("Wrong email or password");
+    throw new HttpException("Wrong email or password", 401);
   }
 
   const token = jwt.sign(
