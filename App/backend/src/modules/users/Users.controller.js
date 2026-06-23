@@ -1,6 +1,54 @@
 const usersService = require("./Users.service");
-const HttpException = require("../../exception/index")
+const HttpException = require("../../exception/index");
 
+const getUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const user = await usersService.getUser(userId);
+
+    res.status(200).send({ statusCode: 200, user });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const editUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const loggedUserId = req.user._id;
+    const { body } = req;
+    const editedUser = await usersService.editUser(
+      userId,
+      loggedUserId,
+      body,
+    );
+
+    res.status(200).send({
+      statusCode: 200,
+      message: "User info updated",
+      user: editedUser,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deleteUser = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const loggedUserId = req.user._id;
+
+    const deletedUser = await usersService.deleteUser(userId, loggedUserId);
+
+    res.status(200).send({
+      statusCode: 200,
+      message: "User deleted successfully",
+      user: deletedUser,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
 const uploadAvatar = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -11,7 +59,11 @@ const uploadAvatar = async (req, res, next) => {
     }
 
     const imageUrl = req.file.path;
-    const updatedUser = await usersService.uploadAvatar(userId, loggedUserId, imageUrl);
+    const updatedUser = await usersService.uploadAvatar(
+      userId,
+      loggedUserId,
+      imageUrl,
+    );
 
     res.status(200).send({
       statusCode: 200,
@@ -23,4 +75,4 @@ const uploadAvatar = async (req, res, next) => {
   }
 };
 
-module.exports = { uploadAvatar };
+module.exports = { uploadAvatar, getUser, editUser, deleteUser };

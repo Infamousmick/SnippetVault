@@ -13,7 +13,7 @@ const registerValidationRules = [
     .notEmpty()
     .withMessage("The email is mandatory")
     .isEmail()
-    .withMessage("Invalid email"),
+    .withMessage("If provided, must be a valid email address"),
   body("password")
     .notEmpty()
     .withMessage("The password is mandatory")
