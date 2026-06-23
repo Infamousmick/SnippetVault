@@ -2,6 +2,7 @@ const express = require("express");
 const snippets = express.Router();
 const {
   postValidationRules,
+  editValidationRules,
   validate,
 } = require("../../middlewares/validation/SnippetsValidation");
 const snippetsController = require("./Snippets.controller");
@@ -15,9 +16,9 @@ snippets.post(
   snippetsController.newPost,
 );
 snippets.get("/myPosts", snippetsController.getMyPosts);
-snippets.put(
+snippets.patch(
   "/edit/:postId",
-  postValidationRules,
+  editValidationRules,
   validate,
   snippetsController.editPost,
 );

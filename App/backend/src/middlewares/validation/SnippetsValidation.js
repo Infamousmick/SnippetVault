@@ -3,8 +3,32 @@ const BadRequestException = require("../../exception/BadRequestException");
 
 const postValidationRules = [
   body("title").trim().notEmpty().withMessage("The title is mandatory"),
-  body("code_content").trim().notEmpty().withMessage("Snippet content is mandatory"),
-  body("language").trim().notEmpty().withMessage("Snippet language is mandatory"),
+  body("code_content")
+    .trim()
+    .notEmpty()
+    .withMessage("Snippet content is mandatory"),
+  body("language")
+    .trim()
+    .notEmpty()
+    .withMessage("Snippet language is mandatory"),
+];
+
+const editValidationRules = [
+  body("title")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("If provided, the title cannot be empty"),
+  body("code_content")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("If provided, the content cannot be empty"),
+  body("language")
+    .optional()
+    .trim()
+    .notEmpty()
+    .withMessage("If provided, the language cannot be empty"),
 ];
 
 const validate = (req, res, next) => {
@@ -21,4 +45,4 @@ const validate = (req, res, next) => {
   next(new BadRequestException("Post data validation error", extractedErrors));
 };
 
-module.exports = { postValidationRules, validate };
+module.exports = { postValidationRules, editValidationRules, validate };

@@ -26,8 +26,10 @@ const registerUser = async (body) => {
 };
 
 const login = async (body) => {
-  const { email, password } = body;
-  const user = await UsersSchema.findOne({ email });
+  const { identifier, password } = body;
+  const user = await UsersSchema.findOne({
+    $or: [{ email: identifier }, { username: identifier }],
+  });
 
   if (!user) {
     throw new HttpException("Wrong email or password", 401);
