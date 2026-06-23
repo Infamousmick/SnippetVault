@@ -1,5 +1,4 @@
 const snippetsService = require("./Snippets.service");
-const SnippetsNotFoundException = require("../../exception/snippets/SnippetsNotFoundException");
 
 const getPosts = async (req, res, next) => {
   try {

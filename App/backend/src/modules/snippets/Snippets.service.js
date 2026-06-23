@@ -1,11 +1,12 @@
-const HttpException = require("../../exception");
+const SnippetNotFoundException = require("../../exception/snippets/SnippetsNotFoundException");
+const HttpException = require("../../exception/index");
 const snippetsSchema = require("./Snippets.schema");
 
 const findCorrespondence = async (postId, userId) => {
   const snippet = await snippetsSchema.findById(postId);
 
   if (!snippet) {
-    throw new HttpException("Snippet not found", 404);
+    throw new SnippetNotFoundException("Snippet not found", 404);
   }
 
   if (snippet.user_id.toString() !== userId.toString()) {
@@ -30,7 +31,7 @@ const getSingleSnippet = async (postId) => {
     .populate("user_id", "username avatar_url");
 
   if (!snippet) {
-    throw new HttpException("Snippet not found", 404);
+    throw new SnippetNotFoundException("Snippet not found", 404);
   }
 
   return snippet;

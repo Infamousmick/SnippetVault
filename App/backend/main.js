@@ -1,9 +1,10 @@
 require("dotenv").config();
 const express = require("express");
+const server = express();
 const initDatabaseConnection = require("./src/config/db");
 const AuthRoute = require("./src/modules/auth/Auth.routes");
 const SnippetsRoute = require("./src/modules/snippets/Snippets.routes");
-const server = express();
+const UsersRoute = require("./src/modules/users/Users.routes")
 const PORT = process.env.PORT || 3001;
 const verifyToken = require("./src/middlewares/auth/auth.middlewares");
 const cors = require("cors");
@@ -18,6 +19,7 @@ server.use(requestLogger);
 server.use("/auth", AuthRoute);
 server.use(verifyToken);
 server.use("/snippets", SnippetsRoute);
+server.use("/users", UsersRoute)
 
 const initServer = async () => {
   await initDatabaseConnection();
