@@ -1,6 +1,5 @@
 const jwt = require("jsonwebtoken");
 
-
 const manageOauthCallback = async (req, res, next) => {
   try {
     const user = req.user;
@@ -9,7 +8,7 @@ const manageOauthCallback = async (req, res, next) => {
       expiresIn: "1d",
     });
 
-    const redirectUrl = `http://localhost:3000/oauth/success?token=${token}`;
+    const redirectUrl = `${process.env.FRONTEND_URL}/oauth/success?token=${token}`;
     res.redirect(redirectUrl);
   } catch (e) {
     console.error("OAuth Callback Error:", e);
