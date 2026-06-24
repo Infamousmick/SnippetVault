@@ -3,9 +3,10 @@ const oauth = express.Router();
 const passport = require("passport");
 const session = require("express-session");
 const GithubStrategy = require("passport-github2").Strategy;
-const githubController = require("./github/Github.oauth.controller");
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+const oauthController = require("./oauth.controller");
+
 const usersSchema = require("../../modules/users/Users.schema");
-const UsersSchema = require("../../modules/users/Users.schema");
 
 oauth.use(
   session({
@@ -25,6 +26,7 @@ passport.deserializeUser((user, done) => {
   done(null, user);
 });
 
+// Github Strategy
 passport.use(
   new GithubStrategy(
     {
@@ -34,7 +36,7 @@ passport.use(
     },
     async (acessToken, refreshToken, profile, done) => {
       try {
-        let user = await UsersSchema.findOne({ github_id: profile.id });
+        let user = await usersSchema.findOne({ github_id: profile.id });
 
         if (!user) {
           const email =
@@ -42,11 +44,45 @@ passport.use(
               ? profile.emails[0].value
               : `${profile.username}@github.local`;
 
-          user = new UsersSchema({
+          user = new usersSchema({
             username: profile.username,
             email: email,
             github_id: profile.id,
             avatar_url: profile.photos[0].value || "https://placehold.co/150",
+          });
+
+          await user.save();
+        }
+
+        return done(null, user);
+      } catch (e) {
+        return done(e, null);
+      }
+    },
+  ),
+);
+
+// Google Strategy
+passport.use(
+  new GoogleStrategy(
+    {
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      callbackURL: process.env.GOOGLE_CALLBACK_URL,
+    },
+    async (acessToken, refreshToken, profile, done) => {
+      try {
+        let user = await usersSchema.findOne({ google_id: profile.id });
+
+        if (!user) {
+          user = new usersSchema({
+            username: profile.displayName || `user_${profile.id}`,
+            email: profile.emails[0].value,
+            google_id: profile.id,
+            avatar_url:
+              profile.photos && profile.photos[0]
+                ? profile.photos[0].value
+                : "https://placehold.co/150",
           });
 
           await user.save();
@@ -70,7 +106,20 @@ oauth.get(
   passport.authenticate("github", {
     failureRedirect: `${process.env.FRONTEND_URL}/login?error=true`,
   }),
-  githubController.manageOauthCallback,
+  oauthController.manageOauthCallback,
+);
+
+// GOOGLE OAUTH
+oauth.get(
+  "/google",
+  passport.authenticate("google", { scope: ["profile", "email"] }),
+);
+oauth.get(
+  "/google/callback",
+  passport.authenticate("google", {
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=true`,
+  }),
+  oauthController.manageOauthCallback,
 );
 
 module.exports = oauth;

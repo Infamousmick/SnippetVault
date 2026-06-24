@@ -7,6 +7,8 @@ const EXCLUDED_ROUTES = [
   { method: "POST", path: "/auth/register" },
   { method: "GET", path: "/oauth/github" },
   { method: "GET", path: "/oauth/github/callback" },
+  { method: "GET", path: "/oauth/google" },
+  { method: "GET", path: "/oauth/google/callback" },
 ];
 
 const verifyToken = async (req, res, next) => {
