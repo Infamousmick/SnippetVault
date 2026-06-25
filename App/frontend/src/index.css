@@ -1,0 +1,25 @@
+:root {
+    --bg-dark: #0a0a0a;
+    --bg-card: #171717;
+    --text-primary: #f9fafb;
+    --text-secondary: #9ca3af;
+    --accent-green: #10b981;
+    --accent-green-hover: #059669;
+}
+
+body {
+    background-color: var(--bg-dark) !important;
+    color: var(--text-primary) !important;
+    margin: 0;
+    padding: 0;
+    -webkit-font-smoothing: antialiased;
+}
+
+a {
+    color: var(--accent-green);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--accent-green-hover);
+}
