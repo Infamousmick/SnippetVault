@@ -7,7 +7,7 @@ const errorHandler = (err, req, res, next) => {
     return res.status(err.statusCode).json({
       statusCode: err.statusCode,
       message: err.message,
-      error: err.error || null,
+      errors: err.errors || null,
     });
   }
   console.error(pc.red("🔴 SERVER CRITIC ERROR: " + pc.yellow(err.message)));

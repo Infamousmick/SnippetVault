@@ -10,21 +10,22 @@ import {
   MyCardFooter,
 } from "../../components/MyCard/MyCard";
 import MyButton from "../../components/MyButton/MyButton";
-import "./Login.css";
+import "./Register.css";
 import { Container } from "react-bootstrap";
 
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import { FaGithub } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Mail, KeyRound } from "lucide-react";
+import { Mail, KeyRound, AtSign } from "lucide-react";
 
-const Login = () => {
+const Register = () => {
   const [formData, setFormData] = useState({
-    identifier: "",
+    email: "",
+    username: "",
     password: "",
   });
   const [err, setErr] = useState(null);
-  const [isLogin, setIsLogin] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
   const oauths = [
     { id: 0, name: "github", icon: FaGithub, label: "Continue with GitHub" },
@@ -38,14 +39,14 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isLogin) {
+    if (isRegistered) {
       const timer = setTimeout(() => {
-        navigate("/");
+        navigate("/login");
       }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [isLogin, navigate]);
+  }, [isRegistered, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -57,14 +58,15 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/auth/login`,
+        `${import.meta.env.VITE_APP_SERVERURL}/auth/register`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            identifier: formData.identifier,
+            email: formData.email,
+            username: formData.username,
             password: formData.password,
           }),
         },
@@ -86,11 +88,8 @@ const Login = () => {
         }
         throw new Error(errData.message || "Registration failed");
       }
-      const { token, user } = await response.json();
-      localStorage.setItem("token", token);
-      localStorage.setItem("user", JSON.stringify(user));
 
-      setIsLogin(true);
+      setIsRegistered(true);
     } catch (error) {
       setErr(error.message || "Errore di connessione");
     }
@@ -102,9 +101,11 @@ const Login = () => {
         <Container className="d-flex justify-content-center">
           <MyCard className="auth-card">
             <MyCardHeader className="text-center pb-0">
-              <MyCardTitle>Welcome back</MyCardTitle>
+              <MyCardTitle>
+                Welcome to Snippet<span className="vault">Vault</span>
+              </MyCardTitle>
               <MyCardDescription>
-                Login to your SnippetVault's account
+                Accedi al tuo account SnippetVault
               </MyCardDescription>
             </MyCardHeader>
 
@@ -129,7 +130,7 @@ const Login = () => {
               </div>
 
               {err && <CustomAlert text={err} type="danger" />}
-              {isLogin && (
+              {isRegistered && (
                 <CustomAlert text="Login successfully!" type="success" />
               )}
 
@@ -140,11 +141,24 @@ const Login = () => {
                 <div className="position-relative">
                   <Mail size={18} className="auth-input-icon" />
                   <input
-                    type="text"
-                    name="identifier"
-                    placeholder="email or username"
+                    type="email"
+                    name="email"
+                    placeholder="snippetvault@gmail.com"
                     className="auth-input w-100"
-                    value={formData.identifier}
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+
+                <div className="position-relative">
+                  <AtSign size={18} className="auth-input-icon" />
+                  <input
+                    type="text"
+                    name="username"
+                    placeholder="username"
+                    className="auth-input w-100"
+                    value={formData.username}
                     onChange={handleChange}
                     required
                   />
@@ -164,15 +178,15 @@ const Login = () => {
                 </div>
 
                 <MyButton type="submit" className="w-100 mt-2">
-                  Log in
+                  Register
                 </MyButton>
               </form>
             </MyCardContent>
 
             <MyCardFooter className="justify-content-center gap-1">
-              <span className="auth-footer-text">Don't have an account?</span>
-              <Link to="/register" className="auth-link">
-                Register
+              <span className="auth-footer-text">Have an account?</span>
+              <Link to="/login" className="auth-link">
+                Log in
               </Link>
             </MyCardFooter>
           </MyCard>
@@ -182,4 +196,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
