@@ -1,0 +1,98 @@
+.author-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.author-name {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.author-handle {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+}
+
+.code-block-wrapper {
+    background-color: var(--bg-code-block);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.code-block-header {
+    background-color: var(--bg-code-header);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.mac-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+
+.mac-red {
+    background-color: var(--mac-red);
+}
+
+.mac-yellow {
+    background-color: var(--mac-yellow);
+}
+
+.mac-green {
+    background-color: var(--mac-green);
+}
+
+.code-language {
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+}
+
+.snippet-tag {
+    background-color: var(--bg-hover-light);
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.snippet-tag:hover {
+    background-color: var(--bg-hover-strong);
+    color: var(--text-primary);
+}
+
+.stat-btn {
+    background: none;
+    border: none;
+    padding: 0.25rem 0.7rem;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.stat-btn:hover {
+    color: var(--text-primary);
+    background-color: var(--bg-hover-strong);
+}
+
+.active-star {
+    color: var(--accent-green);
+}
+
+.active-star:hover {
+    color: var(--accent-green-hover);
+}
+
+.active-star .stat-icon {
+    fill: var(--accent-green);
+}
