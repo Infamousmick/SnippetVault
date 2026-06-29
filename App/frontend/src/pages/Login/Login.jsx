@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import BaseLayout from "../../Layout/BaseLayout";
 import {
@@ -19,12 +20,12 @@ import { FcGoogle } from "react-icons/fc";
 import { Mail, KeyRound } from "lucide-react";
 
 const Login = () => {
+  const { isLoggedIn, loginUser } = useContext(AuthContext);
   const [formData, setFormData] = useState({
     identifier: "",
     password: "",
   });
   const [err, setErr] = useState(null);
-  const [isLogin, setIsLogin] = useState(false);
 
   const oauths = [
     { id: 0, name: "github", icon: FaGithub, label: "Continue with GitHub" },
@@ -38,14 +39,14 @@ const Login = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (isLogin) {
+    if (isLoggedIn) {
       const timer = setTimeout(() => {
         navigate("/");
       }, 3000);
 
       return () => clearTimeout(timer);
     }
-  }, [isLogin, navigate]);
+  }, [isLoggedIn, navigate]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -90,7 +91,7 @@ const Login = () => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
 
-      setIsLogin(true);
+      loginUser(user);
     } catch (error) {
       setErr(error.message || "Errore di connessione");
     }
@@ -129,7 +130,7 @@ const Login = () => {
               </div>
 
               {err && <CustomAlert text={err} type="danger" />}
-              {isLogin && (
+              {isLoggedIn && (
                 <CustomAlert text="Login successfully!" type="success" />
               )}
 

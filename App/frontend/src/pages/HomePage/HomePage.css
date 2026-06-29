@@ -99,3 +99,24 @@
 .snippet-day-link:hover {
     color: var(--accent-green);
 }
+
+.locked-feed-card {
+    background-color: var(--bg-code-block);
+}
+
+.locked-icon {
+    color: var(--text-secondary);
+}
+
+.locked-title {
+    font-size: 1.25rem;
+}
+
+.locked-subtitle {
+    color: var(--text-secondary);
+    max-width: 400px;
+}
+
+.locked-login-link {
+    text-decoration: none;
+}

@@ -1,5 +1,6 @@
 import BaseLayout from "../../Layout/BaseLayout";
-import { useEffect } from "react";
+import { useEffect, useContext } from "react";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Spinner } from "react-bootstrap";
 import "./OauthSuccess.css";
@@ -7,6 +8,8 @@ import "./OauthSuccess.css";
 const OauthSuccess = () => {
   const navigate = useNavigate();
   const location = useLocation();
+
+  const { loginUser } = useContext(AuthContext);
 
   useEffect(() => {
     const searcParams = new URLSearchParams(location.search);
@@ -27,6 +30,8 @@ const OauthSuccess = () => {
           const userData = await response.json();
           localStorage.setItem("user", JSON.stringify(userData));
 
+          loginUser(userData);
+
           setTimeout(() => {
             navigate("/");
           }, 1000);
@@ -45,7 +50,7 @@ const OauthSuccess = () => {
     } else {
       navigate("/login");
     }
-  }, [location, navigate]);
+  }, [location, navigate, loginUser]);
 
   return (
     <BaseLayout>

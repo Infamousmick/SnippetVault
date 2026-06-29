@@ -6,19 +6,22 @@ import NotFoundPage from "./pages/NotFoundPage/NotFoundPage";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import OauthSuccess from "./pages/OauthSuccess/OauthSuccess";
+import { AuthProvider } from "./context/AuthContext/AuthContext";
 
 function App() {
   return (
     <>
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/oauth/success/" element={<OauthSuccess />} />
-          <Route path="*" element={<NotFoundPage />} />
-        </Routes>
-      </BrowserRouter>
+      <AuthProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/oauth/success/" element={<OauthSuccess />} />
+            <Route path="*" element={<NotFoundPage />} />
+          </Routes>
+        </BrowserRouter>
+      </AuthProvider>
     </>
   );
 }

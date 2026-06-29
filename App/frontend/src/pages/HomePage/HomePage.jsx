@@ -1,6 +1,8 @@
+import { useContext, useState, useEffect } from "react";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
 import { Container, Row, Col } from "react-bootstrap";
-import { Flame, Plus, TrendingUp } from "lucide-react";
+import { Flame, Plus, TrendingUp, Lock } from "lucide-react";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
 import {
@@ -24,6 +26,34 @@ const trendingTags = [
 const filters = ["Trending", "Newest", "Most Forked"];
 
 const HomePage = () => {
+  const { isLoggedIn } = useContext(AuthContext);
+  const [posts, setPosts] = useState([]);
+
+  useEffect(() => {
+    const fetchPosts = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_SERVERURL}/snippets/all`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          },
+        );
+        const data = await response.json();
+
+        setPosts(data.allPosts);
+      } catch (error) {
+        console.error("Error loading posts", error);
+      }
+    };
+
+    if (isLoggedIn) {
+      fetchPosts();
+    }
+  }, [isLoggedIn]);
   return (
     <BaseLayout>
       <Container className="py-4 py-md-5">
@@ -37,9 +67,12 @@ const HomePage = () => {
                     Fresh snippets from developers.
                   </p>
                 </div>
-                <MyButton className="d-md-none px-3 py-1">
-                  <Plus size={16} /> New
-                </MyButton>
+
+                {isLoggedIn && (
+                  <MyButton className="d-md-none px-3 py-1">
+                    <Plus size={16} /> New
+                  </MyButton>
+                )}
               </div>
 
               <div className="filters-container">
@@ -54,11 +87,29 @@ const HomePage = () => {
                 ))}
               </div>
 
-              <div className="d-flex flex-column gap-4">
-                {[1, 2].map((id) => (
-                  <SnippetCard key={id} />
-                ))}
-              </div>
+              {isLoggedIn ? (
+                <div className="d-flex flex-column gap-4">
+                  {posts.map((post) => (
+                    <SnippetCard key={post._id} snippet={post} />
+                  ))}
+                </div>
+              ) : (
+                <MyCard className="locked-feed-card py-5 mt-2 text-center border-0">
+                  <MyCardContent className="d-flex flex-column align-items-center gap-3">
+                    <Lock size={48} className="locked-icon mb-2" />
+                    <MyCardTitle className="locked-title">
+                      Log in to view the feed
+                    </MyCardTitle>
+                    <p className="locked-subtitle m-0 mb-3">
+                      Join SnippetVault to explore, share, and fork code
+                      snippets from developers worldwide.
+                    </p>
+                    <Link to="/login" className="locked-login-link">
+                      <MyButton>Log in to continue</MyButton>
+                    </Link>
+                  </MyCardContent>
+                </MyCard>
+              )}
             </div>
           </Col>
 

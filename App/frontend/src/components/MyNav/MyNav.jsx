@@ -1,4 +1,4 @@
-import { useLocation, Link } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { Container, Dropdown } from "react-bootstrap";
 import {
   Code,
@@ -8,18 +8,31 @@ import {
   Bookmark,
   Settings,
   LogOut,
+  LogIn,
 } from "lucide-react";
 import MyButton from "../MyButton/MyButton";
 import "./MyNav.css";
-import { useState } from "react";
+import { useContext } from "react";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
 
 const MyNav = () => {
   const location = useLocation();
-  const [isLogged, setIsLogged] = useState(false);
+  const navigate = useNavigate();
+
+  const inLoginOrRegister =
+    location.pathname.startsWith("/login") ||
+    location.pathname.startsWith("/register");
+  const { user, isLoggedIn, logoutUser } = useContext(AuthContext);
+
   const Links = [
     { id: 0, href: "/", label: "Feed" },
     { id: 1, href: "/profile", label: "Profile" },
   ];
+
+  const handleLogout = () => {
+    logoutUser();
+    navigate("/login");
+  };
 
   return (
     <header className="my-header sticky-top">
@@ -61,69 +74,86 @@ const MyNav = () => {
           />
         </div>
 
-        <MyButton className="flex-shrink-0">
-          <Plus size={18} />
-          <span className="d-none d-sm-inline">New Snippet</span>
-        </MyButton>
+        {isLoggedIn && (
+          <MyButton className="flex-shrink-0">
+            <Plus size={18} />
+            <span className="d-none d-sm-inline">New Snippet</span>
+          </MyButton>
+        )}
 
         <Dropdown align="end" className="flex-shrink-0">
           <Dropdown.Toggle as="div" className="avatar-toggle">
-            <img src="https://placehold.co/32" alt="User Avatar" />
+            <img
+              src={user?.avatar_url || "https://placehold.co/32"}
+              alt={user?.username || "Guest"}
+            />
           </Dropdown.Toggle>
 
           <Dropdown.Menu className="custom-dropdown-menu mt-2">
-            <div className="px-3 py-2">
-              <div className="dropdown-user-name">Infamousmick</div>
-            </div>
-
-            <Dropdown.Divider className="custom-divider" />
-
-            <Dropdown.Item
-              as={Link}
-              to="/profile"
-              className="custom-dropdown-item"
-            >
-              <User size={16} className="me-2" /> Profile
-            </Dropdown.Item>
-
-            <Dropdown.Item
-              as={Link}
-              to="/saved"
-              className="custom-dropdown-item"
-            >
-              <Bookmark size={16} className="me-2" /> Saved
-            </Dropdown.Item>
-
-            <Dropdown.Item
-              as={Link}
-              to="/settings"
-              className="custom-dropdown-item"
-            >
-              <Settings size={16} className="me-2" /> Settings
-            </Dropdown.Item>
-
-            <Dropdown.Divider className="custom-divider" />
-
-            {isLogged && (
-              <Dropdown.Item
-                as={Link}
-                to="/login"
-                className="custom-dropdown-item logout-item"
-              >
-                {" "}
-                <LogOut size={16} className="me-2" /> Log out
-              </Dropdown.Item>
+            {isLoggedIn ? (
+              <div className="px-3 py-2">
+                <div className="dropdown-user-name">{user?.username}</div>
+                <div className="dropdown-user-email">{user?.email}</div>
+              </div>
+            ) : (
+              <div className="px-3 py-2">
+                <div className="dropdown-user-name">Guest</div>
+                <div className="dropdown-user-email">Not logged in</div>
+              </div>
             )}
 
-            {!isLogged && (
+            {(isLoggedIn || !inLoginOrRegister) && (
+              <Dropdown.Divider className="custom-divider" />
+            )}
+
+            {isLoggedIn && (
+              <>
+                <Dropdown.Item
+                  as={Link}
+                  to="/profile"
+                  className="custom-dropdown-item"
+                >
+                  <User size={16} className="me-2" /> Profile
+                </Dropdown.Item>
+
+                <Dropdown.Item
+                  as={Link}
+                  to="/saved"
+                  className="custom-dropdown-item"
+                >
+                  <Bookmark size={16} className="me-2" /> Saved
+                </Dropdown.Item>
+
+                <Dropdown.Item
+                  as={Link}
+                  to="/settings"
+                  className="custom-dropdown-item"
+                >
+                  <Settings size={16} className="me-2" /> Settings
+                </Dropdown.Item>
+
+                <Dropdown.Divider className="custom-divider" />
+              </>
+            )}
+
+            {isLoggedIn ? (
               <Dropdown.Item
-                as={Link}
-                to="/login"
-                className="custom-dropdown-item login-item"
+                as="button"
+                onClick={handleLogout}
+                className="custom-dropdown-item logout-item"
               >
-                {" "}
-                <LogOut size={16} className="me-2" /> Log in
+                <LogOut size={16} className="me-2" /> Log out
               </Dropdown.Item>
+            ) : (
+              !inLoginOrRegister && (
+                <Dropdown.Item
+                  as={Link}
+                  to="/login"
+                  className="custom-dropdown-item login-item"
+                >
+                  <LogIn size={16} className="me-2" /> Log in
+                </Dropdown.Item>
+              )
             )}
           </Dropdown.Menu>
         </Dropdown>

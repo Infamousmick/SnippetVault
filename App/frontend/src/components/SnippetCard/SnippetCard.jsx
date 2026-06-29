@@ -13,62 +13,33 @@ import {
 import "./SnippetCard.css";
 import GeminiBtn from "../GeminiBtn/GeminiBtn";
 
+const countItems = (value) => {
+  if (Array.isArray(value)) return value.length;
+
+  return 0;
+};
+
 const SnippetCard = ({ snippet }) => {
   const [isCopied, setisCopied] = useState(false);
+  const data = snippet || {};
 
-  const data = snippet || {
-    author: {
-      username: "Infamousmick",
-      avatar_url: "https://avatars.githubusercontent.com/u/113915713?v=4",
-    },
-    timeAgo: "3h ago",
-    title: "clear_cache — clear Android's cache",
-    description:
-      "Script to clear hidden cache from your Android device and print status",
-    language: "shell",
-    languageDisplay: "SH",
-    code: `clear_cache() {
-    num_iterations=44
-    error_occurred=false
-    printf "[i]Clearing cache\n"
-    for i in $(seq 1 $num_iterations); do
-        pm trim-caches 999999999999999999
-        
-        # Check if the command was successful
-        if [ $? -ne 0 ]; then
-            # An error occurred while executing the command
-            printf "Error: Command pm trim-caches failed."
-            error_occurred=true
-            break
-        fi
-        
-        if [ $i -eq 22 ]; then
-            printf "[i]Please wait ...\n"
-        fi
-        
-        # Progress counter
-        progress=$((100 * i / num_iterations))
-        # Print the progress counter
-        echo -n -e "\r    ["
-        for j in $(seq 1 $((progress / 2))); do
-            echo -n "="
-        done
-        printf ">%02d%%]" $progress
-    done
-    
-    if [ "$error_occurred" = false ]; then
-        sleep 2
-        clear
-        printf "\n[+] Execution Succeed..! \n"
-    fi
-}
-    clear_cache`,
-    tags: ["react", "hooks", "typescript"],
-    stats: { stars: 842, comments: 36, forks: 214 },
-  };
+  const username = data.user_id?.username ?? "Guest";
+  const avatar_url = data.user_id?.avatar_url ?? "https://placehold.co/32";
+  const title = data.title ?? "Untitled Snippet";
+  const description = data.description ?? "";
+  const language = data.language ?? "text";
+  const languageDisplay = language.toUpperCase();
+  const code =
+    typeof data.code_content === "string"
+      ? data.code_content.replace(/\r\n/g, "\n")
+      : "";
+  const tags = Array.isArray(data.tags) ? data.tags : [];
+  const starsCount = countItems(data.stars);
+  const commentsCount = countItems(data.comments);
+  const forksCount = countItems(data.forks);
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(data.code);
+    navigator.clipboard.writeText(code);
     setisCopied(true);
     setTimeout(() => setisCopied(false), 2000);
   };
@@ -77,18 +48,18 @@ const SnippetCard = ({ snippet }) => {
     <MyCard className="mb-4">
       <MyCardHeader>
         <div className="d-flex align-items-center gap-2 mb-3">
-          <img
-            src={data.author.avatar_url}
-            alt={data.author.username}
-            className="author-avatar"
-          />
+          <img src={avatar_url} alt={username} className="author-avatar" />
           <div className="d-flex flex-column">
-            <span className="author-name">{data.author.username}</span>
-            <span className="author-handle">{data.timeAgo}</span>
+            <span className="author-name">{username}</span>
+            <span className="author-handle">
+              {data.createdAt
+                ? new Date(data.createdAt).toLocaleDateString()
+                : "Just now"}
+            </span>
           </div>
         </div>
-        <MyCardTitle>{data.title}</MyCardTitle>
-        <MyCardDescription>{data.description}</MyCardDescription>
+        <MyCardTitle>{title}</MyCardTitle>
+        <MyCardDescription>{description}</MyCardDescription>
       </MyCardHeader>
 
       <MyCardContent>
@@ -100,11 +71,11 @@ const SnippetCard = ({ snippet }) => {
               <span className="mac-dot mac-green"></span>
             </div>
             <span className="code-language text-uppercase">
-              {data.languageDisplay}
+              {languageDisplay}
             </span>
           </div>
           <SyntaxHighlighter
-            language={data.language}
+            language={language}
             style={vscDarkPlus}
             customStyle={{
               margin: 0,
@@ -115,12 +86,12 @@ const SnippetCard = ({ snippet }) => {
               overflowY: "auto",
             }}
           >
-            {data.code}
+            {code}
           </SyntaxHighlighter>
         </div>
 
         <div className="d-flex flex-wrap gap-2">
-          {data.tags.map((tag, index) => (
+          {tags.map((tag, index) => (
             <span key={index} className="snippet-tag">
               #{tag}
             </span>
@@ -132,15 +103,15 @@ const SnippetCard = ({ snippet }) => {
         <div className="d-flex gap-2 flex-wrap">
           <button className="stat-btn active-star d-flex align-items-center gap-1">
             <Star size={16} className="stat-icon" />
-            <span>{data.stats.stars}</span>
+            <span>{starsCount}</span>
           </button>
           <button className="stat-btn d-flex align-items-center gap-1">
             <MessageSquare size={16} className="stat-icon" />
-            <span>{data.stats.comments}</span>
+            <span>{commentsCount}</span>
           </button>
           <button className="stat-btn d-flex align-items-center gap-1">
             <GitFork size={16} className="stat-icon" />
-            <span>{data.stats.forks}</span>
+            <span>{forksCount}</span>
           </button>
         </div>
 
@@ -148,7 +119,6 @@ const SnippetCard = ({ snippet }) => {
           <button
             className="stat-btn d-flex align-items-center gap-1 copy-btn"
             onClick={handleCopy}
-            title="Copy"
           >
             {isCopied ? (
               <Check size={16} className="text-success" />
@@ -157,12 +127,10 @@ const SnippetCard = ({ snippet }) => {
             )}
             <span>{isCopied ? "Copied" : "Copy"}</span>
           </button>
-
           <GeminiBtn />
         </div>
       </MyCardFooter>
     </MyCard>
   );
 };
-
 export default SnippetCard;
