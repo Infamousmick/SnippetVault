@@ -18,10 +18,13 @@ const findCorrespondence = async (postId, userId) => {
   return snippet;
 };
 
-const getPosts = async () => {
-  return await snippetsSchema.find().populate("user_id", "username avatar_url");
+const getAllSnippets = async (sortQuery) => {
+  return await snippetsSchema
+    .find()
+    .sort(sortQuery)
+    .populate("user_id", "username avatar_url");
 };
-const newPost = async (body) => {
+const newSnippet = async (body) => {
   return await new snippetsSchema(body).save();
 };
 
@@ -36,29 +39,29 @@ const getSingleSnippet = async (postId) => {
 
   return snippet;
 };
-const getMyPosts = async (userId) => {
+const getMySnippets = async (userId) => {
   return await snippetsSchema
     .find({ user_id: userId })
     .populate("user_id", "username avatar_url");
 };
 
-const editPost = async (postId, body, userId) => {
+const editSnippet = async (postId, body, userId) => {
   await findCorrespondence(postId, userId);
 
   return await snippetsSchema.findByIdAndUpdate(postId, body, { new: true });
 };
 
-const deletePost = async (postId, userId) => {
+const deleteSnippet = async (postId, userId) => {
   await findCorrespondence(postId, userId);
 
   return await snippetsSchema.findByIdAndDelete(postId);
 };
 
 module.exports = {
-  newPost,
+  newSnippet,
   getSingleSnippet,
-  getMyPosts,
-  getPosts,
-  editPost,
-  deletePost,
+  getMySnippets,
+  getAllSnippets,
+  editSnippet,
+  deleteSnippet,
 };

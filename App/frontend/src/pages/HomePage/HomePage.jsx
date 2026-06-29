@@ -28,16 +28,16 @@ const filters = ["Trending", "Newest", "Most Forked"];
 
 const HomePage = () => {
   const { isLoggedIn } = useContext(AuthContext);
-  const [posts, setPosts] = useState([]);
+  const [snippets, setSnippets] = useState([]);
 
   const [activeFilter, setActiveFilter] = useState(filters[0]);
 
   useEffect(() => {
-    const fetchPosts = async () => {
+    const fetchSnippets = async () => {
       try {
         const token = localStorage.getItem("token");
         const response = await fetch(
-          `${import.meta.env.VITE_APP_SERVERURL}/snippets/all`,
+          `${import.meta.env.VITE_APP_SERVERURL}/snippets/all?sort=${activeFilter}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -47,16 +47,16 @@ const HomePage = () => {
         );
         const data = await response.json();
 
-        setPosts(data.allPosts);
+        setSnippets(data.allSnippets);
       } catch (error) {
-        console.error("Error loading posts", error);
+        console.error("Error loading snippets", error);
       }
     };
 
     if (isLoggedIn) {
-      fetchPosts();
+      fetchSnippets();
     }
-  }, [isLoggedIn]);
+  }, [isLoggedIn, activeFilter]);
   return (
     <BaseLayout>
       <Container className="py-4 py-md-5">
@@ -96,8 +96,8 @@ const HomePage = () => {
 
               {isLoggedIn ? (
                 <div className="d-flex flex-column gap-4">
-                  {posts.length > 0 ? (
-                    posts.map((post) => (
+                  {snippets.length > 0 ? (
+                    snippets.map((post) => (
                       <SnippetCard key={post._id} snippet={post} />
                     ))
                   ) : (

@@ -1,10 +1,19 @@
 const snippetsService = require("./Snippets.service");
 
-const getPosts = async (req, res, next) => {
+const getAllSnippets = async (req, res, next) => {
   try {
-    const allPosts = await snippetsService.getPosts();
+    const { sort } = req.query;
+    let sortQuery;
+    if (sort === "Most Forked") {
+      sortQuery = { forks: -1 };
+    } else if (sort == "Newest") {
+      sortQuery = { createdAt: -1 };
+    } else {
+      sortQuery = { stars: -1 };
+    }
+    const allSnippets = await snippetsService.getAllSnippets(sortQuery);
 
-    res.status(200).send({ statusCode: 200, allPosts });
+    res.status(200).send({ statusCode: 200, allSnippets });
   } catch (e) {
     next(e);
   }
@@ -19,7 +28,7 @@ const getSingleSnippet = async (req, res, next) => {
     next(e);
   }
 };
-const newPost = async (req, res, next) => {
+const newSnippet = async (req, res, next) => {
   try {
     const { body } = req;
 
@@ -28,52 +37,58 @@ const newPost = async (req, res, next) => {
       user_id: req.user._id,
     };
 
-    const newPost = await snippetsService.newPost(snippetData);
+    const newSnippet = await snippetsService.newSnippet(snippetData);
 
-    res
-      .status(201)
-      .send({ statusCode: 201, message: "New Snippet Post posted!", newPost });
-  } catch (e) {
-    next(e);
-  }
-};
-
-const getMyPosts = async (req, res, next) => {
-  try {
-    const userId = req.user._id;
-
-    const myPosts = await snippetsService.getMyPosts(userId);
-
-    res.status(200).send({ statusCode: 200, myPosts });
-  } catch (e) {
-    next(e);
-  }
-};
-
-const editPost = async (req, res, next) => {
-  try {
-    const { postId } = req.params;
-    const { body } = req;
-    const userId = req.user._id;
-
-    const editedPost = await snippetsService.editPost(postId, body, userId);
-
-    res.status(200).send({
-      statusCode: 200,
-      message: "Post edited successfully",
-      editedPost,
+    res.status(201).send({
+      statusCode: 201,
+      message: "New Snippet Post posted!",
+      newSnippet,
     });
   } catch (e) {
     next(e);
   }
 };
 
-const deletePost = async (req, res, next) => {
+const getMySnippets = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+
+    const mySnippets = await snippetsService.getMySnippets(userId);
+
+    res.status(200).send({ statusCode: 200, mySnippets });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const editSnippet = async (req, res, next) => {
+  try {
+    const { postId } = req.params;
+    const { body } = req;
+    const userId = req.user._id;
+
+    const editedSnippet = await snippetsService.editSnippet(
+      postId,
+      body,
+      userId,
+    );
+
+    res.status(200).send({
+      statusCode: 200,
+      message: "Post edited successfully",
+      editedSnippet,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deleteSnippet = async (req, res, next) => {
   try {
     const { postId } = req.params;
     const userId = req.user._id;
 
-    const deletedPost = await snippetsService.deletePost(postId, userId);
+    const deletedSnippet = await snippetsService.deleteSnippet(postId, userId);
 
     res.status(200).send({
       statusCode: 200,
@@ -86,10 +101,10 @@ const deletePost = async (req, res, next) => {
 };
 
 module.exports = {
-  newPost,
+  newSnippet,
   getSingleSnippet,
-  getMyPosts,
-  getPosts,
-  editPost,
-  deletePost,
+  getMySnippets,
+  getAllSnippets,
+  editSnippet,
+  deleteSnippet,
 };
