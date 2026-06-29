@@ -5,6 +5,7 @@ import { Container, Row, Col } from "react-bootstrap";
 import { Flame, Plus, TrendingUp, Lock } from "lucide-react";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
+import EmptyState from "../../components/EmptyState/EmptyState";
 import {
   MyCard,
   MyCardHeader,
@@ -28,6 +29,8 @@ const filters = ["Trending", "Newest", "Most Forked"];
 const HomePage = () => {
   const { isLoggedIn } = useContext(AuthContext);
   const [posts, setPosts] = useState([]);
+
+  const [activeFilter, setActiveFilter] = useState(filters[0]);
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -76,22 +79,30 @@ const HomePage = () => {
               </div>
 
               <div className="filters-container">
-                {filters.map((filter, i) => (
-                  <button
-                    key={filter}
-                    type="button"
-                    className={`filter-pill ${i === 0 ? "active" : ""}`}
-                  >
-                    {filter}
-                  </button>
-                ))}
+                {filters.map((filter) => {
+                  const isActive = activeFilter === filter;
+                  return (
+                    <button
+                      key={filter}
+                      type="button"
+                      className={`filter-pill ${isActive ? "active" : ""}`}
+                      onClick={() => setActiveFilter(filter)}
+                    >
+                      {filter}
+                    </button>
+                  );
+                })}
               </div>
 
               {isLoggedIn ? (
                 <div className="d-flex flex-column gap-4">
-                  {posts.map((post) => (
-                    <SnippetCard key={post._id} snippet={post} />
-                  ))}
+                  {posts.length > 0 ? (
+                    posts.map((post) => (
+                      <SnippetCard key={post._id} snippet={post} />
+                    ))
+                  ) : (
+                    <EmptyState />
+                  )}
                 </div>
               ) : (
                 <MyCard className="locked-feed-card py-5 mt-2 text-center border-0">
