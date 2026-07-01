@@ -8,6 +8,7 @@ import Register from "./pages/Register/Register";
 import OauthSuccess from "./pages/OauthSuccess/OauthSuccess";
 import { AuthProvider } from "./context/AuthContext/AuthContext";
 import { SnippetProvider } from "./context/SnippetContext/SnippetContext";
+import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
 
 function App() {
   return (
@@ -20,6 +21,24 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/oauth/success/" element={<OauthSuccess />} />
+
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <div>Profile</div>
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/settings"
+                element={
+                  <ProtectedRoute>
+                    <div>Settings</div>
+                  </ProtectedRoute>
+                }
+              />
+
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </BrowserRouter>

@@ -13,7 +13,7 @@ const errorHandler = require("./src/middlewares/errors/errorHandler");
 const { requestLogger } = require("./src/middlewares/logger/logger");
 const pc = require("picocolors");
 
-server.use(cors());
+server.use(cors({ origin: process.env.FRONTEND_URL }));
 server.use(express.json());
 server.use(requestLogger);
 server.use("/auth", AuthRoute);
