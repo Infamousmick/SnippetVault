@@ -131,3 +131,26 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }
+
+
+.action-icon {
+    color: var(--text-secondary);
+    transition: color 0.2s ease;
+}
+
+
+.edit-btn:hover {
+    background-color: var(--bg-hover-strong);
+}
+
+.edit-btn:hover .action-icon {
+    color: var(--accent-green);
+}
+
+.delete-btn:hover {
+    background-color: var(--accent-danger-hover);
+}
+
+.delete-btn:hover .action-icon {
+    color: var(--accent-danger);
+}

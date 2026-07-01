@@ -19,6 +19,7 @@ export const SnippetProvider = ({ children }) => {
   const [activeFilter, setActiveFilter] = useState("Trending");
   const [showModal, setShowModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [editingSnippet, setEditingSnippet] = useState(null);
 
   const fetchSnippets = useCallback(async () => {
     setError(null);
@@ -90,13 +91,87 @@ export const SnippetProvider = ({ children }) => {
     }
   };
 
+  const handleEditSnippet = async (formData, snippetId) => {
+    setIsCreating(true);
+    try {
+      const token = localStorage.getItem("token");
+
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/edit/${snippetId}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+
+      if (!response.ok) throw new Error("Failed to edit snippet.");
+      setShowModal(false);
+      setEditingSnippet(null);
+      await fetchSnippets();
+    } catch (error) {
+      console.warn(error);
+      alert(error.message || "Something went wrong while editing...");
+    } finally {
+      setIsCreating(false);
+    }
+  };
+
+  const handleDeleteSnippet = async (snippetId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/delete/${snippetId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to delete snippet.");
+      }
+
+      setSnippets((prevSnippets) =>
+        prevSnippets.filter((snippet) => snippet._id !== snippetId),
+      );
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Something went wrong while deleting...");
+    }
+  };
+
   const value = {
     snippets,
     error,
     activeFilter,
     setActiveFilter,
-    openModal: () => setShowModal(true),
-    closeModal: () => setShowModal(false),
+    openModal: (snippetData = null) => {
+      setEditingSnippet(snippetData);
+      setShowModal(true);
+    },
+    closeModal: () => {
+      setShowModal(false);
+      setEditingSnippet(null);
+    },
+    handleDeleteSnippet,
+    handleEditSnippet,
   };
 
   return (
@@ -112,9 +187,17 @@ export const SnippetProvider = ({ children }) => {
       >
         <Modal.Body className="p-0">
           <SnippetForm
-            onSubmit={handleCreateSnippet}
+            initialData={editingSnippet}
+            onSubmit={(formData) =>
+              editingSnippet
+                ? handleEditSnippet(formData, editingSnippet._id)
+                : handleCreateSnippet(formData)
+            }
             isLoading={isCreating}
-            onCancel={() => setShowModal(false)}
+            onCancel={() => {
+              setShowModal(false);
+              setEditingSnippet(null);
+            }}
           />
         </Modal.Body>
       </Modal>

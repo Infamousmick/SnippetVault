@@ -93,7 +93,7 @@ const deleteSnippet = async (req, res, next) => {
     res.status(200).send({
       statusCode: 200,
       message: " Post deleted successfully",
-      deletedPost,
+      deletedSnippet,
     });
   } catch (e) {
     next(e);

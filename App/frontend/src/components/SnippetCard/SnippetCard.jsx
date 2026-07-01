@@ -5,8 +5,10 @@ import {
   Copy,
   Check,
   Sparkles,
+  Pencil,
+  Trash2,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import {
@@ -19,7 +21,8 @@ import {
 } from "../MyCard/MyCard";
 import "./SnippetCard.css";
 import GeminiBtn from "../GeminiBtn/GeminiBtn";
-
+import { AuthContext } from "../../context/AuthContext/AuthContext";
+import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 const countItems = (value) => {
   if (Array.isArray(value)) return value.length;
 
@@ -27,6 +30,8 @@ const countItems = (value) => {
 };
 
 const SnippetCard = ({ snippet }) => {
+  const { user } = useContext(AuthContext);
+  const { handleDeleteSnippet, openModal } = useContext(SnippetContext);
   const [isCopied, setisCopied] = useState(false);
   const data = snippet || {};
 
@@ -52,11 +57,24 @@ const SnippetCard = ({ snippet }) => {
     setTimeout(() => setisCopied(false), 2000);
   };
 
+  const handleEdit = () => {
+    openModal(data);
+  };
+  const handleDelete = () => {
+    const isConfirmed = window.confirm("Are you sure to delete this snippet?");
+
+    if (isConfirmed) {
+      handleDeleteSnippet(data._id);
+    }
+  };
+
+  const isMySnippet = user && user._id === data.user_id?._id;
+
   return (
     <MyCard className="mb-4">
       <MyCardHeader>
-        <div className="d-flex justify-content-between align-items-start mb-3">
-          <div className="d-flex align-items-center gap-2 mb-3">
+        <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3 gap-3">
+          <div className="d-flex align-items-center gap-2">
             <img src={avatar_url} alt={username} className="author-avatar" />
             <div className="d-flex flex-column">
               <span className="author-name">{username}</span>
@@ -67,12 +85,34 @@ const SnippetCard = ({ snippet }) => {
               </span>
             </div>
           </div>
-          {isAiGenerated && (
-            <div className="ai-generated-badge d-flex align-items-center gap-1">
-              <Sparkles size={12} />
-              <span>AI Generated</span>
-            </div>
-          )}
+
+          <div className="d-flex align-items-center gap-3 align-self-start align-self-sm-center mt-2 mt-sm-0">
+            {isAiGenerated && (
+              <div className="ai-generated-badge d-flex align-items-center gap-1">
+                <Sparkles size={12} />
+                <span>AI Generated</span>
+              </div>
+            )}
+
+            {isMySnippet && (
+              <div className="d-flex gap-2">
+                <button
+                  className="stat-btn edit-btn d-flex align-items-center justify-content-center p-1"
+                  onClick={handleEdit}
+                  title="Edit Snippet"
+                >
+                  <Pencil size={18} className="action-icon" />
+                </button>
+                <button
+                  className="stat-btn delete-btn d-flex align-items-center justify-content-center p-1"
+                  onClick={handleDelete}
+                  title="Delete Snippet"
+                >
+                  <Trash2 size={18} className="action-icon" />
+                </button>
+              </div>
+            )}
+          </div>
         </div>
         <MyCardTitle>{title}</MyCardTitle>
         <MyCardDescription>{description}</MyCardDescription>

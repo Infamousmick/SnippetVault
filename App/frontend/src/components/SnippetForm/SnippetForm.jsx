@@ -65,8 +65,14 @@ const SnippetForm = ({
 
   useEffect(() => {
     if (initialData) {
-      const { title, description, code, language, tags, is_ai_generated } =
-        initialData;
+      const {
+        title,
+        description,
+        code_content,
+        language,
+        tags,
+        is_ai_generated,
+      } = initialData;
       setFormData({
         title: title || "",
         description: description || "",
