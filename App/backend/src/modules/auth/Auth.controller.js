@@ -5,7 +5,7 @@ const registerUser = async (req, res, next) => {
     const { body } = req;
     const user = await authService.registerUser(body);
 
-    res.status(201).send({ statusCode: 201, message: "User registerd!", user });
+    res.status(201).json({ statusCode: 201, message: "User registerd!", user });
   } catch (e) {
     next(e);
   }
@@ -19,12 +19,11 @@ const login = async (req, res, next) => {
     res
       .header("authorization", token)
       .status(200)
-      .send({ statusCode: 200, message: "Login successfully", token, user });
+      .json({ statusCode: 200, message: "Login successfully", token, user });
   } catch (e) {
     next(e);
   }
 };
-
 
 const getMe = async (req, res, next) => {
   try {
@@ -35,4 +34,19 @@ const getMe = async (req, res, next) => {
   }
 };
 
-module.exports = { registerUser, login, getMe };
+const changePassword = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const { oldPassword, newPassword } = req.body;
+    const user = await authService.changePassword(
+      userId,
+      oldPassword,
+      newPassword,
+    );
+    res.status(200).json({ message: "Password changed successfully!" });
+  } catch (e) {
+    next(e);
+  }
+};
+
+module.exports = { registerUser, login, getMe, changePassword };

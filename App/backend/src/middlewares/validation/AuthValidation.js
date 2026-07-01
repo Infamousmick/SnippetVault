@@ -29,6 +29,15 @@ const loginValidationRules = [
   body("password").notEmpty().withMessage("The password is mandatory"),
 ];
 
+const changePasswordValidationRules = [
+  body("oldPassword").notEmpty().withMessage("The old password is mandatory"),
+  body("newPassword")
+    .notEmpty()
+    .withMessage("The new password is mandatory")
+    .isLength({ min: 8 })
+    .withMessage("The new password must have at least 8 characters"),
+];
+
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -45,4 +54,9 @@ const validate = (req, res, next) => {
   );
 };
 
-module.exports = { registerValidationRules, loginValidationRules, validate };
+module.exports = {
+  registerValidationRules,
+  loginValidationRules,
+  changePasswordValidationRules,
+  validate,
+};

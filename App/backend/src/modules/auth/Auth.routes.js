@@ -4,6 +4,7 @@ const auth = express.Router();
 const {
   registerValidationRules,
   loginValidationRules,
+  changePasswordValidationRules,
   validate,
 } = require("../../middlewares/validation/AuthValidation");
 const authController = require("./Auth.controller");
@@ -18,4 +19,11 @@ auth.post(
 auth.post("/login", loginValidationRules, validate, authController.login);
 
 auth.get("/me", verifyToken, authController.getMe);
+auth.patch(
+  "/password",
+  verifyToken,
+  changePasswordValidationRules,
+  validate,
+  authController.changePassword,
+);
 module.exports = auth;
