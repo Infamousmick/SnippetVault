@@ -24,25 +24,41 @@ import parserBabel from "prettier/plugins/babel";
 import parserEstree from "prettier/plugins/estree";
 import parserHtml from "prettier/plugins/html";
 import parserPostcss from "prettier/plugins/postcss";
+import markdown from "prettier/plugins/markdown";
+import yaml from "prettier/plugins/yaml";
+
 
 const SUPPORTED_LANGUAGES = [
   { value: "javascript", label: "JavaScript" },
   { value: "typescript", label: "TypeScript" },
   { value: "jsx", label: "JSX" },
-  { value: "python", label: "Python" },
   { value: "html", label: "HTML" },
   { value: "css", label: "CSS" },
+  { value: "json", label: "JSON" },
+  { value: "markdown", label: "Markdown" },
+  { value: "yaml", label: "YAML" },
+  { value: "python", label: "Python" },
   { value: "sql", label: "SQL" },
   { value: "shell", label: "Shell" },
-  { value: "json", label: "JSON" },
 ];
 
 const PRETTIER_CONFIGS = {
   javascript: { parser: "babel", plugins: [parserBabel, parserEstree] },
   typescript: { parser: "babel-ts", plugins: [parserBabel, parserEstree] },
+  jsx: { parser: "babel", plugins: [parserBabel, parserEstree] },
   json: { parser: "json", plugins: [parserBabel, parserEstree] },
   html: { parser: "html", plugins: [parserHtml] },
   css: { parser: "css", plugins: [parserPostcss] },
+  markdown: { parser: "markdown", plugins: [markdown] },
+  yaml: { parser: "yaml", plugins: [yaml] },
+};
+const INITIAL_FORM_STATE = {
+  title: "",
+  description: "",
+  code_content: "",
+  language: "javascript",
+  tags: "",
+  is_ai_generated: false,
 };
 
 const SnippetForm = ({
@@ -53,14 +69,9 @@ const SnippetForm = ({
 }) => {
   const isEditing = !!initialData;
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    code_content: "",
-    language: "javascript",
-    tags: "",
-    is_ai_generated: false,
-  });
+  const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+
+  const isFormatSupported = Boolean(PRETTIER_CONFIGS[formData.language]);
   const [prettierError, setPrettierError] = useState(null);
 
   useEffect(() => {
@@ -81,6 +92,9 @@ const SnippetForm = ({
         tags: Array.isArray(tags) ? tags.join(", ") : tags || "",
         is_ai_generated: is_ai_generated || false,
       });
+    } else {
+      setFormData(INITIAL_FORM_STATE);
+      setPrettierError(null);
     }
   }, [initialData]);
 
@@ -116,6 +130,7 @@ const SnippetForm = ({
       .map((tag) => tag.trim().toLowerCase())
       .filter((tag) => tag.length > 0);
   };
+
 
   const formatCode = async (code, language) => {
     const config = PRETTIER_CONFIGS[language];
@@ -165,10 +180,9 @@ const SnippetForm = ({
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const formattedCode = await formatCode(
-      formData.code_content,
-      formData.language,
-    );
+    const formattedCode = isFormatSupported
+      ? await formatCode(formData.code_content, formData.language)
+      : formData.code_content;
 
     const finalData = {
       ...formData,
@@ -225,7 +239,6 @@ const SnippetForm = ({
               Description
             </label>
             <textarea
-              type="description"
               id="description"
               name="description"
               className="form-textarea"
@@ -242,18 +255,20 @@ const SnippetForm = ({
               language
             </label>
             <select
-              type="language"
               id="language"
               name="language"
               className="form-select"
               value={formData.language}
               onChange={handleChange}
             >
-              {SUPPORTED_LANGUAGES.map((lang) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
+              {SUPPORTED_LANGUAGES.map((lang) => {
+                const isSupported = !!PRETTIER_CONFIGS[lang.value];
+                return (
+                  <option key={lang.value} value={lang.value}>
+                    {lang.label} {isSupported ? "✨" : ""}
+                  </option>
+                );
+              })}
             </select>
           </div>
 
@@ -267,8 +282,13 @@ const SnippetForm = ({
                 <button
                   type="button"
                   onClick={handleManualFormat}
+                  disabled={!isFormatSupported}
                   className="format-btn"
-                  title="Format Code"
+                  title={
+                    isFormatSupported
+                      ? "Format Code"
+                      : "Auto-formatting not supported for this language"
+                  }
                 >
                   <Wand2 size={14} /> Format
                 </button>

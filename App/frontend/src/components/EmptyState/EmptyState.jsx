@@ -14,7 +14,7 @@ const EmptyState = () => {
         <p className="empty-subtitle m-0 mb-3">
           Be the first to share a snippet with the community!
         </p>
-        <MyButton onClick={openModal}>
+        <MyButton onClick={() => openModal()}>
           <Plus size={16} /> Create Snippet
         </MyButton>
       </MyCardContent>

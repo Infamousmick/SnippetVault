@@ -77,7 +77,7 @@ const MyNav = () => {
         </div>
 
         {isLoggedIn && (
-          <MyButton className="flex-shrink-0" onClick={openModal}>
+          <MyButton className="flex-shrink-0" onClick={() => openModal()}>
             <Plus size={18} />
             <span className="d-none d-sm-inline">New Snippet</span>
           </MyButton>

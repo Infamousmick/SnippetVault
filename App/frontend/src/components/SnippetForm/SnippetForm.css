@@ -131,10 +131,23 @@
     transition: all 0.2s ease;
 }
 
+
 .format-btn:hover {
     color: var(--text-primary);
     border-color: var(--text-primary);
     background-color: var(--bg-hover-light);
+}
+
+.format-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    border-color: var(--border-color);
+    color: var(--text-secondary);
+}
+
+.format-btn:disabled:hover {
+    background-color: transparent;
+    color: var(--text-secondary);
 }
 
 .prettier-error-notice {

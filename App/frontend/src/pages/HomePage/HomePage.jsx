@@ -96,7 +96,7 @@ const HomePage = () => {
                 </div>
 
                 {isLoggedIn && (
-                  <MyButton className=" px-3 py-1" onClick={openModal}>
+                  <MyButton className=" px-3 py-1" onClick={() => openModal()}>
                     <Plus size={16} /> New
                   </MyButton>
                 )}
