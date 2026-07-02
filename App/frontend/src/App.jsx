@@ -9,6 +9,8 @@ import OauthSuccess from "./pages/OauthSuccess/OauthSuccess";
 import { AuthProvider } from "./context/AuthContext/AuthContext";
 import { SnippetProvider } from "./context/SnippetContext/SnippetContext";
 import ProtectedRoute from "./components/ProtectedRoute/ProtectedRoute";
+import SettingsPage from "./pages/SettingsPage/SettingsPage";
+import ProfilePage from "./pages/ProfilePage/ProfilePage";
 
 function App() {
   return (
@@ -26,7 +28,7 @@ function App() {
                 path="/profile"
                 element={
                   <ProtectedRoute>
-                    <div>Profile</div>
+                    <ProfilePage />
                   </ProtectedRoute>
                 }
               />
@@ -34,7 +36,7 @@ function App() {
                 path="/settings"
                 element={
                   <ProtectedRoute>
-                    <div>Settings</div>
+                    <SettingsPage />
                   </ProtectedRoute>
                 }
               />

@@ -24,12 +24,14 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const isOauth = Boolean(user?.google_id || user?.github_id);
   const value = {
     user,
     isLoggedIn: !!user,
     isCheckingAuth,
     loginUser,
     logoutUser,
+    isOauth,
   };
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };

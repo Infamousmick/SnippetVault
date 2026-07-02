@@ -121,7 +121,7 @@ const MyNav = () => {
                 <Dropdown.Item
                   as={Link}
                   to="/saved"
-                  className="custom-dropdown-item"
+                  className="custom-dropdown-item d-none"
                 >
                   <Bookmark size={16} className="me-2" /> Saved
                 </Dropdown.Item>
