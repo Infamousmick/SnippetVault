@@ -1,13 +1,18 @@
 import "./GeminiBtn.css";
 import { Sparkles } from "lucide-react";
 
-const geminiBtn = () => {
+const GeminiBtn = ({ onClick, disabled = false, isLoading = false }) => {
   return (
-    <button className="gemini-btn d-flex align-items-center gap-1">
+    <button
+      type="button"
+      className="gemini-btn d-flex align-items-center gap-1"
+      onClick={onClick}
+      disabled={disabled || isLoading}
+    >
       <Sparkles size={16} />
-      <span>Gemini AI Assist</span>
+      <span>{isLoading ? "Generating..." : "Gemini AI Assist"}</span>
     </button>
   );
 };
 
-export default geminiBtn;
+export default GeminiBtn;
