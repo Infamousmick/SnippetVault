@@ -39,19 +39,31 @@ const MyNav = () => {
   return (
     <header className="my-header sticky-top">
       <Container className="d-flex align-items-center h-100 gap-2 gap-sm-3 px-3">
-        <Link
-          to="/"
-          className="my-logo d-flex align-items-center gap-2 flex-shrink-0"
-        >
-          <span className="logo-icon d-flex align-items-center justify-content-center">
-            <Code size={18} />
-          </span>
-          <span className="logo-text d-none d-sm-inline">
-            Snippet<span className="vault">Vault</span>
-          </span>
-        </Link>
+        <div className="d-flex align-items-center gap-3 flex-shrink-0">
+          <Link to="/" className="my-logo d-flex align-items-center gap-2">
+            <span className="logo-icon d-flex align-items-center justify-content-center">
+              <Code size={18} />
+            </span>
+            <span className="logo-text d-none d-lg-inline">
+              Snippet<span className="vault">Vault</span>
+            </span>
+          </Link>
 
-        <nav className="d-none d-md-flex align-items-center gap-2">
+          <a
+            href="https://github.com/infamousmick/SnippetVault/releases"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="version-badge d-flex align-items-center gap-1"
+            title="View Releases"
+          >
+            <span className="fw-bold">v1.0</span>
+            <span className="whats-new-text d-none d-lg-inline">
+              ✨ What's new?
+            </span>
+          </a>
+        </div>
+
+        <nav className="d-none d-md-flex align-items-center gap-2 ms-2">
           {Links.map((link) => {
             const isActive = location.pathname === link.href;
             return (
@@ -79,7 +91,7 @@ const MyNav = () => {
         {isLoggedIn && (
           <MyButton className="flex-shrink-0" onClick={() => openModal()}>
             <Plus size={18} />
-            <span className="d-none d-sm-inline">New Snippet</span>
+            <span className="d-none d-lg-inline">New Snippet</span>
           </MyButton>
         )}
 

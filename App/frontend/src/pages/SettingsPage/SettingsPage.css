@@ -141,3 +141,17 @@
     background-color: rgba(75, 213, 139, 0.1);
     border-radius: 50%;
 }
+
+.settings-sidebar::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+}
+
+.settings-sidebar::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.settings-sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+}

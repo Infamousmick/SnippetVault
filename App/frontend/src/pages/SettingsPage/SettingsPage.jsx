@@ -107,15 +107,15 @@ const SettingsPage = () => {
 
         <Tab.Container id="settings-tabs" defaultActiveKey="security">
           <Row>
-            <Col sm={3} className="mb-4 mb-sm-0">
+            <Col lg={3} className="mb-4 mb-lg-0">
               <Nav
                 variant="pills"
-                className="flex-column settings-sidebar gap-2"
+                className="flex-row flex-lg-column flex-nowrap overflow-auto settings-sidebar gap-2"
               >
                 <Nav.Item>
                   <Nav.Link
                     eventKey="security"
-                    className="d-flex align-items-center gap-2"
+                    className="d-flex align-items-center gap-2 text-nowrap flex-shrink-0"
                   >
                     <ShieldAlert size={18} /> Security
                   </Nav.Link>
@@ -124,7 +124,7 @@ const SettingsPage = () => {
                 <Nav.Item>
                   <Nav.Link
                     eventKey="account"
-                    className="d-flex align-items-center gap-2"
+                    className="d-flex align-items-center gap-2 text-nowrap flex-shrink-0"
                   >
                     <User size={18} /> Account
                   </Nav.Link>
@@ -133,7 +133,7 @@ const SettingsPage = () => {
                 <Nav.Item>
                   <Nav.Link
                     eventKey="ai"
-                    className="d-flex align-items-center gap-2"
+                    className="d-flex align-items-center gap-2 text-nowrap flex-shrink-0"
                   >
                     <Sparkles size={18} /> AI Integrations
                   </Nav.Link>
@@ -141,7 +141,7 @@ const SettingsPage = () => {
               </Nav>
             </Col>
 
-            <Col sm={9}>
+            <Col lg={9}>
               <Tab.Content className="settings-content-card">
                 <Tab.Pane eventKey="security">
                   {!isOauth ? (
