@@ -2,6 +2,32 @@
 
 All notable changes to the SnippetVault project will be documented in this file.
 
+## [1.1.0] - 2026-07-04
+
+This update focuses on enhancing user expression through Markdown and refining the overall UI consistency.
+
+### ✨ Features
+
+- **Markdown Support:**
+  - Integrated `react-markdown` to allow rich text formatting in snippet descriptions.
+  - Added a real-time Preview mode in the snippet creation form, providing a seamless toggle between "Write" and "Preview".
+- **Enhanced UI Customization:**
+  - Standardized scrollbar styling across the application for a consistent dark theme experience.
+  - Implemented custom cross-browser text selection (`::selection`) to improve readability and visual identity.
+
+### 🎨 Improvements
+
+- **CSS Architecture Refactoring:**
+  - Performed a major refactor of global styles to separate structural components (`.markdown-preview-box`) from typographic content (`.markdown-content`), ensuring better reusability and cleaner code.
+- **Dynamic Versioning:**
+  - Automated the version badge in the Navbar by dynamically reading the current version from `package.json`.
+- **UI Polish:**
+  - Fixed minor UI inconsistencies in form components, ensuring a cleaner "dark mode" look across all input types and modal overlays.
+
+### 🛡️ Security & Architecture
+
+- Improved CSS specificity and maintainability by centralizing global UI resets in `index.css`.
+
 ## [1.0.0] - 2026-07-03
 
 Welcome to the first official release of SnippetVault! This version lays the foundation of the platform, providing a comprehensive hub for managing, formatting, and sharing code snippets.
