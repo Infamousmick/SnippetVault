@@ -162,3 +162,35 @@
     gap: 0.5rem;
     border: 1px solid rgba(239, 68, 68, 0.18);
 }
+
+
+.segmented-control {
+    display: flex;
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 4px;
+}
+
+.segment-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 4px 12px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.segment-btn:hover {
+    color: var(--text-primary);
+}
+
+.segment-btn.active {
+    background-color: rgba(16, 185, 129, 0.15);
+    color: var(--accent-green);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}

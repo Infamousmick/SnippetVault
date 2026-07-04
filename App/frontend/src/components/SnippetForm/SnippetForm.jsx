@@ -24,7 +24,7 @@ import parserHtml from "prettier/plugins/html";
 import parserPostcss from "prettier/plugins/postcss";
 import markdown from "prettier/plugins/markdown";
 import yaml from "prettier/plugins/yaml";
-
+import ReactMarkdown from "react-markdown";
 
 const SUPPORTED_LANGUAGES = [
   { value: "javascript", label: "JavaScript" },
@@ -72,6 +72,7 @@ const SnippetForm = ({
   const isFormatSupported = Boolean(PRETTIER_CONFIGS[formData.language]);
   const [prettierError, setPrettierError] = useState(null);
   const [isGeneratingWithGemini, setIsGeneratingWithGemini] = useState(false);
+  const [isPreviewMode, setIsPreviewMode] = useState(false);
 
   useEffect(() => {
     if (initialData) {
@@ -96,6 +97,10 @@ const SnippetForm = ({
       setPrettierError(null);
     }
   }, [initialData]);
+
+  const switchPreviwMode = () => {
+    setIsPreviewMode(!isPreviewMode);
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -135,7 +140,6 @@ const SnippetForm = ({
       .map((tag) => tag.trim().toLowerCase())
       .filter((tag) => tag.length > 0);
   };
-
 
   const formatCode = async (code, language) => {
     const config = PRETTIER_CONFIGS[language];
@@ -239,19 +243,50 @@ const SnippetForm = ({
           </div>
 
           <div className="form-group">
-            <label htmlFor="description" className="form-label">
-              <FileText size={14} />
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              className="form-textarea"
-              placeholder="Briefly describe what this snippet does..."
-              value={formData.description}
-              onChange={handleChange}
-              required
-            />
+            <div className="d-flex justify-content-between align-items-center mb-1">
+              <label htmlFor="description" className="form-label mb-0">
+                <FileText size={14} /> Description
+              </label>
+
+              <div className="segmented-control">
+                <button
+                  type="button"
+                  className={`segment-btn ${!isPreviewMode ? "active" : ""}`}
+                  onClick={() => setIsPreviewMode(false)}
+                >
+                  Write
+                </button>
+                <button
+                  type="button"
+                  className={`segment-btn ${isPreviewMode ? "active" : ""}`}
+                  onClick={() => setIsPreviewMode(true)}
+                >
+                  Preview
+                </button>
+              </div>
+            </div>
+
+            {!isPreviewMode ? (
+              <textarea
+                id="description"
+                name="description"
+                className="form-textarea"
+                placeholder="Briefly describe what this snippet does... (Markdown supported)"
+                value={formData.description}
+                onChange={handleChange}
+                required
+              />
+            ) : (
+              <div className="form-textarea markdown-preview-box markdown-content">
+                {formData.description.trim() ? (
+                  <ReactMarkdown>{formData.description}</ReactMarkdown>
+                ) : (
+                  <span className="text-muted fst-italic">
+                    Nothing to preview yet...
+                  </span>
+                )}
+              </div>
+            )}
           </div>
 
           <div className="form-group">

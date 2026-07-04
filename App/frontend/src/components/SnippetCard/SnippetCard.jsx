@@ -23,6 +23,8 @@ import "./SnippetCard.css";
 import GeminiBtn from "../GeminiBtn/GeminiBtn";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
+import ReactMarkdown from "react-markdown";
+
 const countItems = (value) => {
   if (Array.isArray(value)) return value.length;
 
@@ -115,7 +117,9 @@ const SnippetCard = ({ snippet }) => {
           </div>
         </div>
         <MyCardTitle>{title}</MyCardTitle>
-        <MyCardDescription>{description}</MyCardDescription>
+        <MyCardDescription className="markdown-content">
+          <ReactMarkdown>{description}</ReactMarkdown>
+        </MyCardDescription>
       </MyCardHeader>
 
       <MyCardContent>

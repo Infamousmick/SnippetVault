@@ -15,7 +15,9 @@ import "./MyNav.css";
 import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
+import appSettings from "../../../package.json";
 
+const appVersion = appSettings.version;
 const MyNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -56,7 +58,7 @@ const MyNav = () => {
             className="version-badge d-flex align-items-center gap-1"
             title="View Releases"
           >
-            <span className="fw-bold">v1.0</span>
+            <span className="fw-bold">{appVersion}</span>
             <span className="whats-new-text d-none d-lg-inline">
               ✨ What's new?
             </span>

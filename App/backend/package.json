@@ -1,6 +1,6 @@
 {
   "name": "snippetvault",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "💻 SnippetVault | Your personal code hub. Share syntax-highlighted snippets, fork the best solutions, and understand complex code with Gemini AI integration.",
   "main": "main.js",
   "scripts": {
