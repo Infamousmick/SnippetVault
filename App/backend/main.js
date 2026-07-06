@@ -5,6 +5,7 @@ const PORT = process.env.PORT || 3001;
 const initDatabaseConnection = require("./src/config/db");
 const AuthRoute = require("./src/modules/auth/Auth.routes");
 const SnippetsRoute = require("./src/modules/snippets/Snippets.routes");
+const CommentsRoute = require("./src/modules/comments/Comments.routes");
 const UsersRoute = require("./src/modules/users/Users.routes");
 const githubOauthRoute = require("./src/modules/oauth/oauth.route");
 const verifyToken = require("./src/middlewares/auth/auth.middlewares");
@@ -20,6 +21,7 @@ server.use("/auth", AuthRoute);
 server.use("/oauth", githubOauthRoute);
 server.use(verifyToken);
 server.use("/snippets", SnippetsRoute);
+server.use("/snippets/:snippetId/comments", CommentsRoute);
 server.use("/users", UsersRoute);
 
 const initServer = async () => {
