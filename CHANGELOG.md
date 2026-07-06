@@ -2,6 +2,14 @@
 
 All notable changes to the SnippetVault project will be documented in this file.
 
+## [1.1.1] - 2026-07-0
+
+### 🐛 Bug Fixes
+
+- **Mobile UI:**
+  - Fixed an issue where custom WebKit scrollbars forced an unwanted physical scrollbar on touch devices, restoring native fluid scrolling.
+  - Prevented the "Gemini AI Assist" button text from wrapping and breaking the layout on narrow screens by applying strict flexbox constraints.
+
 ## [1.1.0] - 2026-07-04
 
 This update focuses on enhancing user expression through Markdown and refining the overall UI consistency.
