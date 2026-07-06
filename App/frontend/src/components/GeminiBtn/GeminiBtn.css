@@ -1,4 +1,3 @@
-
 .gemini-btn {
     background-image: linear-gradient(100deg, rgb(73, 124, 253), rgb(0, 158, 217), rgb(0, 190, 199));
     box-shadow:
@@ -13,6 +12,8 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
+    flex-shrink: 0;
+    white-space: nowrap;
 }
 
 .gemini-btn:hover {
