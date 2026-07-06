@@ -68,6 +68,10 @@ a:hover {
     color: var(--accent-green-hover);
 }
 
+.markdown-content {
+    min-width: 0;
+    overflow-x: hidden;
+}
 
 .markdown-preview-box {
     background-color: var(--bg-dark);
@@ -107,28 +111,49 @@ a:hover {
     border: 1px solid var(--border-color);
 }
 
-::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+.markdown-content pre {
+    max-width: 100%;
+    overflow-x: auto;
+    background-color: var(--bg-code-block);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 0.75rem;
 }
 
-::-webkit-scrollbar-track {
-    background: transparent;
+.markdown-content pre code {
+    display: block;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: var(--text-primary);
+    white-space: inherit;
 }
 
-::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 4px;
-}
+@media (hover: hover) and (pointer: fine) {
+    ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+    }
 
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(255, 255, 255, 0.3);
-}
+    ::-webkit-scrollbar-track {
+        background: transparent;
+    }
 
-::-webkit-scrollbar-corner {
-    background: transparent;
-}
+    ::-webkit-scrollbar-thumb {
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 4px;
+    }
 
-::-webkit-resizer {
-    background: transparent;
+    ::-webkit-scrollbar-thumb:hover {
+        background: rgba(255, 255, 255, 0.3);
+    }
+
+    ::-webkit-scrollbar-corner {
+        background: transparent;
+    }
+
+    ::-webkit-resizer {
+        background: transparent;
+    }
 }
