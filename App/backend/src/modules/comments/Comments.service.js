@@ -1,5 +1,6 @@
 const CommentNotFoundException = require("../../exception/comments/CommentNotFoundException");
 const HttpException = require("../../exception/index");
+const snippetsSchema = require("../snippets/Snippets.schema");
 
 const commentsSchema = require("./Comments.schema");
 
@@ -26,7 +27,13 @@ const getAllComments = async (snippetId) => {
 };
 
 const createComment = async (body) => {
-  return await new commentsSchema(body).save();
+  const savedComment = await new commentsSchema(body).save();
+
+  await snippetsSchema.findByIdAndUpdate(body.snippet_id, {
+    $push: { comments: savedComment._id },
+  });
+
+  return savedComment;
 };
 
 const editComment = async ({ userId, commentId, body }) => {
@@ -35,7 +42,10 @@ const editComment = async ({ userId, commentId, body }) => {
 };
 
 const deleteComment = async (commentId, userId) => {
-  await findCorrespondence(commentId, userId);
+  const commentToDelete = await findCorrespondence(commentId, userId);
+  await snippetsSchema.findByIdAndUpdate(commentToDelete.snippet_id, {
+    $pull: { comments: commentId },
+  });
 
   return await commentsSchema.findByIdAndDelete(commentId);
 };
