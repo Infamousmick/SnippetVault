@@ -2,7 +2,28 @@
 
 All notable changes to the SnippetVault project will be documented in this file.
 
-## [1.1.1] - 2026-07-0
+## [1.2.0] - 2026-07-07
+
+### ✨ Features
+
+- **Comment System:**
+  - Implemented full CRUD operations for code snippet comments, allowing users to interact directly with snippets.
+  - Added real-time comment creation and deletion with UI feedback.
+  - Integrated dynamic comment counting, synchronized between frontend and backend.
+
+### 🛠️ Backend & Architecture
+- **Data Synchronization:**
+  - Implemented $push and $pull MongoDB operators in the backend services to maintain data consistency between the Snippets and Comments schemas.
+  - Added ownership validation check to ensure only authorized users can edit or delete their own comments.
+
+- **Validation:**
+  - Integrated robust input validation and sanitization middleware for all comment-related API routes.
+
+### 🐛 Bug Fixes
+- UX/UI Stability:
+  - Fixed an error caused by improper DOM nesting in the SnippetCard Markdown description.
+
+## [1.1.1] - 2026-07-03
 
 ### 🐛 Bug Fixes
 

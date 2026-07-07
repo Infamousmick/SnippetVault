@@ -24,6 +24,7 @@ import GeminiBtn from "../GeminiBtn/GeminiBtn";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import ReactMarkdown from "react-markdown";
+import CommentSection from "../CommentSection/CommentSection";
 
 const countItems = (value) => {
   if (Array.isArray(value)) return value.length;
@@ -35,7 +36,11 @@ const SnippetCard = ({ snippet }) => {
   const { user } = useContext(AuthContext);
   const { handleDeleteSnippet, openModal } = useContext(SnippetContext);
   const [isCopied, setisCopied] = useState(false);
+  const [showComments, setShowComments] = useState(false);
   const data = snippet || {};
+  const [localCommentsCount, setLocalCommentsCount] = useState(
+    countItems(data.comments),
+  );
 
   const username = data.user_id?.username ?? "Guest";
   const avatar_url = data.user_id?.avatar_url ?? "https://placehold.co/32";
@@ -50,7 +55,6 @@ const SnippetCard = ({ snippet }) => {
   const isAiGenerated = data.is_ai_generated;
   const tags = Array.isArray(data.tags) ? data.tags : [];
   const starsCount = countItems(data.stars);
-  const commentsCount = countItems(data.comments);
   const forksCount = countItems(data.forks);
 
   const handleCopy = () => {
@@ -117,9 +121,9 @@ const SnippetCard = ({ snippet }) => {
           </div>
         </div>
         <MyCardTitle>{title}</MyCardTitle>
-        <MyCardDescription className="markdown-content">
+        <div className="my-card-description markdown-content">
           <ReactMarkdown>{description}</ReactMarkdown>
-        </MyCardDescription>
+        </div>
       </MyCardHeader>
 
       <MyCardContent>
@@ -165,9 +169,12 @@ const SnippetCard = ({ snippet }) => {
             <Star size={16} className="stat-icon" />
             <span>{starsCount}</span>
           </button>
-          <button className="stat-btn d-flex align-items-center gap-1">
+          <button
+            onClick={() => setShowComments(!showComments)}
+            className={`stat-btn d-flex align-items-center gap-1 ${showComments ? "active-comment-btn" : ""}`}
+          >
             <MessageSquare size={16} className="stat-icon" />
-            <span>{commentsCount}</span>
+            <span>{localCommentsCount}</span>
           </button>
           <button className="stat-btn d-flex align-items-center gap-1">
             <GitFork size={16} className="stat-icon" />
@@ -190,6 +197,14 @@ const SnippetCard = ({ snippet }) => {
           <GeminiBtn />
         </div>
       </MyCardFooter>
+      {showComments && (
+        <div className="snippet-comments-wrapper">
+          <CommentSection
+            snippetId={data._id}
+            onCountChange={(newCount) => setLocalCommentsCount(newCount)}
+          />
+        </div>
+      )}
     </MyCard>
   );
 };

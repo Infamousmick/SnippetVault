@@ -8,7 +8,7 @@ const findCorrespondence = async (commentId, userId) => {
   const comment = await commentsSchema.findById(commentId);
 
   if (!comment) {
-    throw new CommentNotFoundException("COmment not found", 404);
+    throw new CommentNotFoundException("Comment not found", 404);
   }
 
   if (comment.user_id.toString() !== userId.toString()) {
