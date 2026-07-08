@@ -18,12 +18,31 @@ const findCorrespondence = async (postId, userId) => {
   return snippet;
 };
 
-const getAllSnippets = async (sortQuery) => {
-  return await snippetsSchema
-    .find()
+const getAllSnippets = async (sortQuery, pageNum, pageSizeNum, queryStr) => {
+  const safeQueryStr = queryStr ? queryStr.replaceAll("#", "").trim() : "";
+  const query = safeQueryStr
+    ? {
+        $or: [
+          { title: { $regex: safeQueryStr, $options: "i" } },
+          { description: { $regex: safeQueryStr, $options: "i" } },
+          { language: { $regex: safeQueryStr, $options: "i" } },
+          { tags: { $elemMatch: { $regex: safeQueryStr, $options: "i" } } },
+        ],
+      }
+    : {};
+
+  const totalSnippets = await snippetsSchema.countDocuments(query);
+  const totalPages = Math.ceil(totalSnippets / pageSizeNum);
+  const allSnippets = await snippetsSchema
+    .find(query)
+    .limit(pageSizeNum)
+    .skip((pageNum - 1) * pageSizeNum)
     .sort(sortQuery)
     .populate("user_id", "username avatar_url");
+
+  return { allSnippets, totalSnippets, totalPages };
 };
+
 const newSnippet = async (body) => {
   return await new snippetsSchema(body).save();
 };

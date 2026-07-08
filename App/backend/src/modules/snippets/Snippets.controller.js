@@ -2,7 +2,7 @@ const snippetsService = require("./Snippets.service");
 
 const getAllSnippets = async (req, res, next) => {
   try {
-    const { sort } = req.query;
+    const { page, pageSize, queryStr, sort } = req.query;
     let sortQuery;
     if (sort === "Most Forked") {
       sortQuery = { forks: -1 };
@@ -11,9 +11,20 @@ const getAllSnippets = async (req, res, next) => {
     } else {
       sortQuery = { stars: -1 };
     }
-    const allSnippets = await snippetsService.getAllSnippets(sortQuery);
 
-    res.status(200).send({ statusCode: 200, allSnippets });
+    const pageNum = parseInt(page, 10) || 1;
+    const pageSizeNum = parseInt(pageSize, 10) || 5;
+    const { allSnippets, totalSnippets, totalPages } =
+      await snippetsService.getAllSnippets(
+        sortQuery,
+        pageNum,
+        pageSizeNum,
+        queryStr,
+      );
+
+    res
+      .status(200)
+      .send({ statusCode: 200, allSnippets, totalSnippets, totalPages });
   } catch (e) {
     next(e);
   }
