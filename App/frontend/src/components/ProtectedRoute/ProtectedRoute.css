@@ -3,11 +3,6 @@
     color: var(--text-primary);
 }
 
-.custom-spinner {
-    color: var(--accent-green);
-    width: 3rem;
-    height: 3rem;
-}
 
 .loading-title {
     font-size: 1.25rem;

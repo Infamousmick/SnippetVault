@@ -20,13 +20,31 @@ export const SnippetProvider = ({ children }) => {
   const [showModal, setShowModal] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
   const [editingSnippet, setEditingSnippet] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  useEffect(() => {
+    const debounceTimeout = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 500);
+
+    return () => clearTimeout(debounceTimeout);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [debouncedQuery]);
 
   const fetchSnippets = useCallback(async () => {
     setError(null);
+    setIsLoading(true);
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/all?sort=${activeFilter}`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/all?sort=${activeFilter}&page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -43,11 +61,14 @@ export const SnippetProvider = ({ children }) => {
 
       const data = await response.json();
       setSnippets(data.allSnippets);
+      setTotalPages(data.totalPages || 1);
     } catch (error) {
       console.error(error);
       setError("Oops! Something went wrong while loading the feed.");
+    } finally {
+      setIsLoading(false);
     }
-  }, [activeFilter, logoutUser]);
+  }, [activeFilter, page, debouncedQuery, logoutUser]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -172,6 +193,13 @@ export const SnippetProvider = ({ children }) => {
     },
     handleDeleteSnippet,
     handleEditSnippet,
+    page,
+    setPage,
+    totalPages,
+    searchQuery,
+    setSearchQuery,
+    debouncedQuery,
+    isLoading,
   };
 
   return (

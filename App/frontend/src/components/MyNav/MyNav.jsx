@@ -21,7 +21,7 @@ const appVersion = appSettings.version;
 const MyNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { openModal } = useContext(SnippetContext);
+  const { openModal, searchQuery, setSearchQuery } = useContext(SnippetContext);
 
   const inLoginOrRegister =
     location.pathname.startsWith("/login") ||
@@ -84,6 +84,8 @@ const MyNav = () => {
           <Search className="search-icon pe-none position-absolute" size={14} />
           <input
             type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input w-100"
             placeholder="Search snippets, tags, people..."
             aria-label="Search snippets"

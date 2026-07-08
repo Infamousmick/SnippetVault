@@ -1,7 +1,7 @@
 import { useContext, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
-import { Container, Row, Col } from "react-bootstrap";
+import { Container, Row, Col, Spinner } from "react-bootstrap";
 import { Flame, Plus, TrendingUp, Lock, AlertCircle } from "lucide-react";
 import SnippetForm from "../../components/SnippetForm/SnippetForm";
 import BaseLayout from "../../Layout/BaseLayout";
@@ -30,9 +30,26 @@ const filters = ["Trending", "Newest", "Most Forked"];
 const HomePage = () => {
   const { isLoggedIn } = useContext(AuthContext);
 
-  const { snippets, error, activeFilter, setActiveFilter, openModal } =
-    useContext(SnippetContext);
+  const {
+    snippets,
+    error,
+    activeFilter,
+    setActiveFilter,
+    openModal,
+    page,
+    setPage,
+    totalPages,
+    debouncedQuery,
+    isLoading,
+  } = useContext(SnippetContext);
 
+  const handlePrevPage = () => {
+    if (page > 1) setPage(page - 1);
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages) setPage(page + 1);
+  };
   const renderFeedContent = () => {
     if (!isLoggedIn) {
       return (
@@ -69,8 +86,23 @@ const HomePage = () => {
       );
     }
 
+    if (isLoading) {
+      return (
+        <div className=" d-flex flex-column align-items-center justify-content-center py-5 mt-2">
+          <Spinner
+            animation="border"
+            role="status"
+            className="mb-3 custom-spinner"
+          >
+            <span className="visually-hidden">Loading snippets...</span>
+          </Spinner>
+          <h2 className="loading-title">Loading snippets...</h2>
+        </div>
+      );
+    }
+
     if (snippets.length === 0) {
-      return <EmptyState />;
+      return <EmptyState searchQuery={debouncedQuery} />;
     }
 
     return (
@@ -78,6 +110,28 @@ const HomePage = () => {
         {snippets.map((snippet) => (
           <SnippetCard key={snippet._id} snippet={snippet} />
         ))}
+
+        <div className="d-flex justify-content-between align-items-center mt-4">
+          <MyButton
+            onClick={handlePrevPage}
+            disabled={page === 1}
+            className="pagination-btn"
+          >
+            Previous
+          </MyButton>
+
+          <span className="text-secondary small">
+            Page {page} of {totalPages}
+          </span>
+
+          <MyButton
+            onClick={handleNextPage}
+            disabled={page >= totalPages}
+            className="pagination-btn"
+          >
+            Next
+          </MyButton>
+        </div>
       </div>
     );
   };
@@ -110,7 +164,10 @@ const HomePage = () => {
                       key={filter}
                       type="button"
                       className={`filter-pill ${isActive ? "active" : ""}`}
-                      onClick={() => setActiveFilter(filter)}
+                      onClick={() => {
+                        setActiveFilter(filter);
+                        setPage(1);
+                      }}
                     >
                       {filter}
                     </button>

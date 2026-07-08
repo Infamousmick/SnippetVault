@@ -157,3 +157,10 @@ a:hover {
         background: transparent;
     }
 }
+
+
+.custom-spinner {
+    color: var(--accent-green);
+    width: 3rem;
+    height: 3rem;
+}

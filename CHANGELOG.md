@@ -2,6 +2,24 @@
 
 All notable changes to the SnippetVault project will be documented in this file.
 
+## [1.3.0] - 2026-07-08
+
+### ✨ Features
+
+- **Advanced Search & Filtering:**
+  - Implemented real-time snippet search with a 500ms debounce mechanism to optimize database queries and prevent API rate-limiting.
+  - Added dynamic pagination controls (Previous/Next) synchronized with backend skipping and limiting.
+  - Integrated smart pagination reset on filter or search query.
+
+- **Enhanced UX/UI:**
+  - Added Spinner to provide visual feedback during asynchronous feed fetching.
+  - Implemented dynamic empty states that adapt their messaging based on whether the database is empty or a specific search yielded no results.
+
+### 🎨 Improvements
+
+- **CSS Architecture:**
+  - Refactored and centralized general UI classes into `index.css` for better maintainability and cleaner component-specific stylesheets.
+
 ## [1.2.0] - 2026-07-07
 
 ### ✨ Features
