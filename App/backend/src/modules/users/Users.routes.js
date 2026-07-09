@@ -5,8 +5,8 @@ const {
   editUserValidationRules,
   validate,
 } = require("../../middlewares/validation/UsersValidation");
-
 const cloudUpload = require("../../middlewares/upload/cloudUpload");
+const verifyOwnership = require("../../middlewares/auth/verifyOwnership")
 
 users.get("/:userId", usersController.getUser);
 users.patch(
@@ -17,6 +17,7 @@ users.patch(
 );
 users.post(
   "/:userId/avatar",
+  verifyOwnership,
   cloudUpload.single("avatar"),
   usersController.uploadAvatar,
 );
