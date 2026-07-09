@@ -34,7 +34,8 @@ const countItems = (value) => {
 
 const SnippetCard = ({ snippet }) => {
   const { user } = useContext(AuthContext);
-  const { handleDeleteSnippet, openModal } = useContext(SnippetContext);
+  const { handleDeleteSnippet, openModal, handleToggleStar } =
+    useContext(SnippetContext);
   const [isCopied, setisCopied] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const data = snippet || {};
@@ -54,7 +55,7 @@ const SnippetCard = ({ snippet }) => {
       : "";
   const isAiGenerated = data.is_ai_generated;
   const tags = Array.isArray(data.tags) ? data.tags : [];
-  const starsCount = countItems(data.stars);
+  const starsCount = data.starsCount;
   const forksCount = countItems(data.forks);
 
   const handleCopy = () => {
@@ -75,6 +76,7 @@ const SnippetCard = ({ snippet }) => {
   };
 
   const isMySnippet = user && user._id === data.user_id?._id;
+  const hasStarred = user && data.stars?.includes(user._id);
 
   return (
     <MyCard className="mb-4">
@@ -165,7 +167,10 @@ const SnippetCard = ({ snippet }) => {
 
       <MyCardFooter className="gap-3 flex-wrap justify-content-between">
         <div className="d-flex gap-2 flex-wrap">
-          <button className="stat-btn active-star d-flex align-items-center gap-1">
+          <button
+            className={`stat-btn ${hasStarred ? "active-star" : ""} d-flex align-items-center gap-1`}
+            onClick={() => handleToggleStar(data._id, user._id)}
+          >
             <Star size={16} className="stat-icon" />
             <span>{starsCount}</span>
           </button>

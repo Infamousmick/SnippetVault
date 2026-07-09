@@ -60,6 +60,7 @@ export const SnippetProvider = ({ children }) => {
       if (!response.ok) throw new Error("Unable to retrieve data");
 
       const data = await response.json();
+      console.log(data);
       setSnippets(data.allSnippets);
       setTotalPages(data.totalPages || 1);
     } catch (error) {
@@ -178,6 +179,51 @@ export const SnippetProvider = ({ children }) => {
     }
   };
 
+  const handleToggleStar = async (snippetId, userId) => {
+    setSnippets((prevSnippets) =>
+      prevSnippets.map((snippet) => {
+        if (snippet._id.toString() !== snippetId) return snippet;
+
+        const hasStarred = snippet.stars.includes(userId);
+        return {
+          ...snippet,
+          stars: hasStarred
+            ? snippet.stars.filter((id) => id !== userId)
+            : [...snippet.stars, userId],
+          starsCount: hasStarred
+            ? snippet.starsCount - 1
+            : snippet.starsCount + 1,
+        };
+      }),
+    );
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/star/${snippetId}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to toggle star.");
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error.message || "Something went wrong while toggling star...");
+    }
+  };
+
   const value = {
     snippets,
     error,
@@ -200,6 +246,7 @@ export const SnippetProvider = ({ children }) => {
     setSearchQuery,
     debouncedQuery,
     isLoading,
+    handleToggleStar,
   };
 
   return (
