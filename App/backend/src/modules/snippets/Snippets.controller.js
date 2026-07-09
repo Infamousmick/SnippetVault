@@ -111,6 +111,28 @@ const deleteSnippet = async (req, res, next) => {
   }
 };
 
+const toggleStar = async (req, res, next) => {
+  try {
+    const { postId } = req.params;
+    const userId = req.user._id;
+
+    const { isStarred, totalStars } = await snippetsService.toggleStar(
+      postId,
+      userId,
+    );
+
+    res.status(200).json({
+      statusCode: 200,
+      message: isStarred
+        ? "Star added to the snippet"
+        : "Star deleted from the snippet",
+      isStarred: isStarred,
+      totalStars,
+    });
+  } catch (e) {
+    next(e);
+  }
+};
 module.exports = {
   newSnippet,
   getSingleSnippet,
@@ -118,4 +140,5 @@ module.exports = {
   getAllSnippets,
   editSnippet,
   deleteSnippet,
+  toggleStar,
 };

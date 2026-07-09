@@ -23,5 +23,5 @@ snippets.patch(
   snippetsController.editSnippet,
 );
 snippets.delete("/delete/:postId", snippetsController.deleteSnippet);
-
+snippets.patch("/star/:postId", snippetsController.toggleStar);
 module.exports = snippets;

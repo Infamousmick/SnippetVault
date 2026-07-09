@@ -1,6 +1,7 @@
 const SnippetNotFoundException = require("../../exception/snippets/SnippetsNotFoundException");
 const HttpException = require("../../exception/index");
 const snippetsSchema = require("./Snippets.schema");
+const snippets = require("./Snippets.routes");
 
 const findCorrespondence = async (postId, userId) => {
   const snippet = await snippetsSchema.findById(postId);
@@ -76,6 +77,41 @@ const deleteSnippet = async (postId, userId) => {
   return await snippetsSchema.findByIdAndDelete(postId);
 };
 
+const toggleStar = async (postId, userId) => {
+  const snippet = await snippetsSchema.exists({ _id: postId });
+
+  if (!snippet) {
+    throw new SnippetNotFoundException("Snippet not found", 404);
+  }
+
+  const hasStarred = await snippetsSchema.findOne({
+    _id: postId,
+    stars: userId,
+  });
+
+  let isStarred;
+  if (hasStarred) {
+    await snippetsSchema.updateOne(
+      { _id: postId },
+      {
+        $pull: { stars: userId },
+      },
+    );
+    isStarred = false;
+  } else {
+    await snippetsSchema.updateOne(
+      { _id: postId },
+      {
+        $addToSet: { stars: userId },
+      },
+    );
+    isStarred = true;
+  }
+  const updatedSnippet = await snippetsSchema.findById(postId).select("stars");
+  const totalStars = updatedSnippet.stars.length;
+  return { isStarred, totalStars };
+};
+
 module.exports = {
   newSnippet,
   getSingleSnippet,
@@ -83,4 +119,5 @@ module.exports = {
   getAllSnippets,
   editSnippet,
   deleteSnippet,
+  toggleStar,
 };
