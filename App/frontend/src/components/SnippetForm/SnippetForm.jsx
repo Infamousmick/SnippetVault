@@ -136,6 +136,7 @@ const SnippetForm = ({
     if (!tagsString) return [];
 
     return tagsString
+      .replaceAll("#", "")
       .split(",")
       .map((tag) => tag.trim().toLowerCase())
       .filter((tag) => tag.length > 0);
