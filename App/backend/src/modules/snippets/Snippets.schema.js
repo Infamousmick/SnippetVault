@@ -44,6 +44,10 @@ const SnippetSchema = new mongoose.Schema(
         default: [],
       },
     ],
+    starsCount: {
+      type: Number,
+      default: 0,
+    },
   },
   { timestamps: true, strict: true },
 );

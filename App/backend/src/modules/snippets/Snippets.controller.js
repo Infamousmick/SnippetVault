@@ -5,11 +5,11 @@ const getAllSnippets = async (req, res, next) => {
     const { page, pageSize, queryStr, sort } = req.query;
     let sortQuery;
     if (sort === "Most Forked") {
-      sortQuery = { forks: -1 };
+      sortQuery = { forks: -1, createdAt: -1 };
     } else if (sort == "Newest") {
       sortQuery = { createdAt: -1 };
     } else {
-      sortQuery = { stars: -1 };
+      sortQuery = { starsCount: -1, createdAt: -1 };
     }
 
     const pageNum = parseInt(page, 10) || 1;
@@ -116,7 +116,7 @@ const toggleStar = async (req, res, next) => {
     const { postId } = req.params;
     const userId = req.user._id;
 
-    const { isStarred, totalStars } = await snippetsService.toggleStar(
+    const { isStarred, starsCount } = await snippetsService.toggleStar(
       postId,
       userId,
     );
@@ -127,7 +127,7 @@ const toggleStar = async (req, res, next) => {
         ? "Star added to the snippet"
         : "Star deleted from the snippet",
       isStarred: isStarred,
-      totalStars,
+      starsCount,
     });
   } catch (e) {
     next(e);
