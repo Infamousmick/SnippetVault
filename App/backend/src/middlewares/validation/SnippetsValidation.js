@@ -1,4 +1,4 @@
-const { body, validationResult } = require("express-validator");
+const { body, validationResult, matchedData } = require("express-validator");
 const BadRequestException = require("../../exception/BadRequestException");
 
 const postValidationRules = [
@@ -62,6 +62,8 @@ const editValidationRules = [
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
+    const safeBody = matchedData(req, { locations: ["body"] });
+    req.body = safeBody;
     return next();
   }
 
