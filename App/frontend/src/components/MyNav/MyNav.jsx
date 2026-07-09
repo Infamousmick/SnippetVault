@@ -17,7 +17,7 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import appSettings from "../../../package.json";
 
-const appVersion = appSettings.version;
+const appVersion = appSettings.version.replace(/\.0$/, '');
 const MyNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
