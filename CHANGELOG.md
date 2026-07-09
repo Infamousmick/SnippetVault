@@ -2,6 +2,19 @@
 
 All notable changes to the SnippetVault project will be documented in this file.
 
+## [1.4.0] - 2026-07-09
+
+### ✨ Features
+
+- **Avatar Upload System:**
+  - Implemented the frontend interface for profile picture updates.
+  - Synced the `AuthContext` to instantly reflect the updated avatar across the application (e.g., Navbar) without requiring a page reload.
+
+### 🎨 Improvements
+
+- **UI Customization:**
+  - Styled the native `<input type="file">` using the HTML `<label>` routing hack, providing a clean, custom upload button that matches the application's design system.
+
 ## [1.3.0] - 2026-07-08
 
 ### ✨ Features

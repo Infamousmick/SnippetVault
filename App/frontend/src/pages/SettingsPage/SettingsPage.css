@@ -146,3 +146,8 @@
     height: 6px;
     width: 6px;
 }
+
+.settings-file-upload-label {
+    cursor: pointer;
+    border-style: dashed;
+}
