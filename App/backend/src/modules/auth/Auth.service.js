@@ -54,8 +54,9 @@ const login = async (body) => {
 };
 
 const getMe = async (userId) => {
-  const currentUser =
-    await UsersSchema.findById(userId).select("-password_hash");
+  const currentUser = await UsersSchema.findById(userId)
+    .select("-password_hash")
+    .lean();
 
   if (!currentUser) {
     throw new HttpException("User not found", 404);
