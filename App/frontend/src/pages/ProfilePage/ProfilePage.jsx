@@ -9,7 +9,7 @@ import EmptyState from "../../components/EmptyState/EmptyState";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
-// import PaginationControls from "../../components/PaginationControls/PaginationControls";
+import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import "./ProfilePage.css";
 
 const ProfilePage = () => {
@@ -20,12 +20,18 @@ const ProfilePage = () => {
   const [snippets, setSnippets] = useState([]);
   const [profileUser, setProfileUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [alert, setAlert] = useState({ text: null, type: "danger" });
   const displayMessage = userId
     ? "This developer hasn't shared any snippets yet."
     : "You haven't published anything yet. Share your first shell command, script, or React component to get started!";
 
   const targetUserId = userId || user?._id;
+
+  useEffect(() => {
+    setPage(1);
+  }, [targetUserId]);
 
   const handleProfileStarToggle = async (snippetId, currentUserId) => {
     setSnippets((prevSnippets) =>
@@ -56,7 +62,7 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}`,
+          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}?page=${page}&pageSize=5`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -75,6 +81,7 @@ const ProfilePage = () => {
 
         setSnippets(data.user.snippets || []);
         setProfileUser(data.user);
+        setTotalPages(data.user.totalPages || 1);
       } catch (error) {
         setAlert({ text: error.message, type: "danger" });
       } finally {
@@ -85,7 +92,7 @@ const ProfilePage = () => {
     if (targetUserId) {
       fetchProfileData();
     }
-  }, [targetUserId, user, logoutUser]);
+  }, [targetUserId, user, logoutUser, page]);
 
   return (
     <BaseLayout>
@@ -184,7 +191,13 @@ const ProfilePage = () => {
                       );
                     })
                   )}
-                  {/* <Pagination/> */}
+                  {snippets.length > 0 && (
+                    <PaginationControls
+                      page={page}
+                      setPage={setPage}
+                      totalPages={totalPages}
+                    />
+                  )}
                 </div>
               </>
             )}

@@ -105,7 +105,13 @@ const HomePage = () => {
           <SnippetCard key={snippet._id} snippet={snippet} />
         ))}
 
-        <PaginationControls />
+        {snippets.length > 0 && (
+          <PaginationControls
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+          />
+        )}
       </div>
     );
   };
