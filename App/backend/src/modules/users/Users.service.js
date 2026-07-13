@@ -21,7 +21,19 @@ const extractPublicIdFromUrl = (url) => {
   return pathWithoutVersion.substring(0, lastDotIndex);
 };
 
-const getUser = async (userId, pageNum, pageSizeNum) => {
+const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
+  const safeQueryStr = queryStr ? queryStr.replaceAll("#", "").trim() : "";
+  const query = safeQueryStr
+    ? {
+        $or: [
+          { title: { $regex: safeQueryStr, $options: "i" } },
+          { description: { $regex: safeQueryStr, $options: "i" } },
+          { language: { $regex: safeQueryStr, $options: "i" } },
+          { tags: { $elemMatch: { $regex: safeQueryStr, $options: "i" } } },
+        ],
+      }
+    : {};
+
   const user = await usersSchema
     .findById(userId)
     .select("-password_hash")
@@ -33,10 +45,11 @@ const getUser = async (userId, pageNum, pageSizeNum) => {
 
   const totalSnippets = await snippetsSchema.countDocuments({
     user_id: userId,
+    ...query,
   });
   const totalPages = Math.ceil(totalSnippets / pageSizeNum);
   const userSnippets = await snippetsSchema
-    .find({ user_id: userId })
+    .find({ user_id: userId, ...query })
     .limit(pageSizeNum)
     .skip((pageNum - 1) * pageSizeNum);
   return { ...user, snippets: userSnippets, totalSnippets, totalPages };
