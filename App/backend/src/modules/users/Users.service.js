@@ -21,7 +21,7 @@ const extractPublicIdFromUrl = (url) => {
   return pathWithoutVersion.substring(0, lastDotIndex);
 };
 
-const getUser = async (userId) => {
+const getUser = async (userId, pageNum, pageSizeNum) => {
   const user = await usersSchema
     .findById(userId)
     .select("-password_hash")
@@ -31,8 +31,15 @@ const getUser = async (userId) => {
     throw new UserNotFoundException();
   }
 
-  const userSnippets = await snippetsSchema.find({ user_id: userId });
-  return { ...user, snippets: userSnippets };
+  const totalSnippets = await snippetsSchema.countDocuments({
+    user_id: userId,
+  });
+  const totalPages = Math.ceil(totalSnippets / pageSizeNum);
+  const userSnippets = await snippetsSchema
+    .find({ user_id: userId })
+    .limit(pageSizeNum)
+    .skip((pageNum - 1) * pageSizeNum);
+  return { ...user, snippets: userSnippets, totalSnippets, totalPages };
 };
 
 const editUser = async (userId, loggedUserId, body) => {

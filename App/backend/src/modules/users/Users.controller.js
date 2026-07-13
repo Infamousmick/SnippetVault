@@ -4,7 +4,10 @@ const HttpException = require("../../exception/index");
 const getUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const user = await usersService.getUser(userId);
+    const { page, pageSize } = req.query;
+    const pageNum = parseInt(page, 10) || 1;
+    const pageSizeNum = parseInt(pageSize, 10) || 5;
+    const user = await usersService.getUser(userId, pageNum, pageSizeNum);
 
     res.status(200).send({ statusCode: 200, user });
   } catch (e) {
@@ -17,11 +20,7 @@ const editUser = async (req, res, next) => {
     const { userId } = req.params;
     const loggedUserId = req.user._id;
     const { body } = req;
-    const editedUser = await usersService.editUser(
-      userId,
-      loggedUserId,
-      body,
-    );
+    const editedUser = await usersService.editUser(userId, loggedUserId, body);
 
     res.status(200).send({
       statusCode: 200,
