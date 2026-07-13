@@ -137,3 +137,16 @@
 .delete-btn:hover .action-icon {
     color: var(--accent-danger);
 }
+
+.author-profile-link {
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    display: inline-block;
+    transition: all 0.2s ease-in-out;
+}
+
+.author-profile-link:hover {
+    filter: brightness(1.3);
+    transform: scale(1.02);
+}

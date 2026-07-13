@@ -9,6 +9,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import {
@@ -32,7 +33,7 @@ const countItems = (value) => {
   return 0;
 };
 
-const SnippetCard = ({ snippet }) => {
+const SnippetCard = ({ snippet, onToggleStar }) => {
   const { user } = useContext(AuthContext);
   const { handleDeleteSnippet, openModal, handleToggleStar } =
     useContext(SnippetContext);
@@ -82,7 +83,10 @@ const SnippetCard = ({ snippet }) => {
     <MyCard className="mb-4">
       <MyCardHeader>
         <div className="d-flex flex-column flex-sm-row justify-content-between align-items-start mb-3 gap-3">
-          <div className="d-flex align-items-center gap-2">
+          <Link
+            to={`/profile/${data.user_id?._id}`}
+            className="d-flex align-items-center gap-2 author-profile-link"
+          >
             <img src={avatar_url} alt={username} className="author-avatar" />
             <div className="d-flex flex-column">
               <span className="author-name">{username}</span>
@@ -92,7 +96,7 @@ const SnippetCard = ({ snippet }) => {
                   : "Just now"}
               </span>
             </div>
-          </div>
+          </Link>
 
           <div className="d-flex align-items-center gap-3 align-self-start align-self-sm-center mt-2 mt-sm-0">
             {isAiGenerated && (
@@ -169,7 +173,11 @@ const SnippetCard = ({ snippet }) => {
         <div className="d-flex gap-2 flex-wrap">
           <button
             className={`stat-btn ${hasStarred ? "active-star" : ""} d-flex align-items-center gap-1`}
-            onClick={() => handleToggleStar(data._id, user._id)}
+            onClick={() =>
+              onToggleStar
+                ? onToggleStar(data._id, user._id)
+                : handleToggleStar(data._id, user._id)
+            }
           >
             <Star size={16} className="stat-icon" />
             <span>{starsCount}</span>

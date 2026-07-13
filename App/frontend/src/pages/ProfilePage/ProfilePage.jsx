@@ -1,11 +1,196 @@
+import { Container, Row, Col, Spinner } from "react-bootstrap";
+import { useState, useEffect, useContext } from "react";
+import { useParams } from "react-router-dom";
+import { Star, SquareDashedBottomCode } from "lucide-react";
 import BaseLayout from "../../Layout/BaseLayout";
-
+import { MyCard, MyCardContent } from "../../components/MyCard/MyCard";
+import SnippetCard from "../../components/SnippetCard/SnippetCard";
+import EmptyState from "../../components/EmptyState/EmptyState";
+import { AuthContext } from "../../context/AuthContext/AuthContext";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
+import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
+// import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import "./ProfilePage.css";
+
 const ProfilePage = () => {
+  const { userId } = useParams();
+  const { user, logoutUser } = useContext(AuthContext);
+  const { handleToggleStar } = useContext(SnippetContext);
+
+  const [snippets, setSnippets] = useState([]);
+  const [profileUser, setProfileUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [alert, setAlert] = useState({ text: null, type: "danger" });
+  const displayMessage = userId
+    ? "This developer hasn't shared any snippets yet."
+    : "You haven't published anything yet. Share your first shell command, script, or React component to get started!";
+
+  const targetUserId = userId || user?._id;
+
+  const handleProfileStarToggle = async (snippetId, currentUserId) => {
+    setSnippets((prevSnippets) =>
+      prevSnippets.map((snippet) => {
+        if (snippet._id.toString() !== snippetId) return snippet;
+
+        const hasStarred = snippet.stars.includes(currentUserId);
+        return {
+          ...snippet,
+          stars: hasStarred
+            ? snippet.stars.filter((id) => id !== currentUserId)
+            : [...snippet.stars, currentUserId],
+          starsCount: hasStarred
+            ? snippet.starsCount - 1
+            : snippet.starsCount + 1,
+        };
+      }),
+    );
+
+    handleToggleStar(snippetId, currentUserId);
+  };
+
+  useEffect(() => {
+    const fetchProfileData = async () => {
+      setIsLoading(true);
+      setAlert({ text: null, type: "danger" });
+      try {
+        const token = localStorage.getItem("token");
+
+        const response = await fetch(
+          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
+
+        if (response.status === 401) {
+          logoutUser();
+          return;
+        }
+
+        if (!response.ok) throw new Error("Failed to fetch profile data");
+
+        const data = await response.json();
+
+        setSnippets(data.user.snippets || []);
+        setProfileUser(data.user);
+      } catch (error) {
+        setAlert({ text: error.message, type: "danger" });
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (targetUserId) {
+      fetchProfileData();
+    }
+  }, [targetUserId, user, logoutUser]);
+
   return (
     <BaseLayout>
+      <Container className="py-4 py-md-5">
+        <Row className="justify-content-center">
+          <Col xs={12} lg={8}>
+            {isLoading && (
+              <div className=" d-flex flex-column align-items-center justify-content-center py-5 mt-2">
+                <Spinner
+                  animation="border"
+                  role="status"
+                  className="mb-3 custom-spinner"
+                >
+                  <span className="visually-hidden">Loading profile...</span>
+                </Spinner>
+                <h2 className="loading-title">Loading profile...</h2>
+              </div>
+            )}
 
-      <div>ProfilePage</div>
+            {!isLoading && alert.text && (
+              <div className="d-flex justify-content-center py-5 mt-2">
+                <CustomAlert
+                  text={alert.text}
+                  type={alert.type}
+                  onClose={() => setAlert({ text: null, type: "danger" })}
+                />
+              </div>
+            )}
+
+            {!isLoading && !alert.text && profileUser && (
+              <>
+                <MyCard className="profile-header-card mb-5 border-0">
+                  <MyCardContent className="d-flex flex-column flex-sm-row align-items-center text-center text-sm-start gap-4 py-4">
+                    <img
+                      src={
+                        profileUser?.avatar_url || "https://placehold.co/120"
+                      }
+                      alt="User Avatar"
+                      className="profile-avatar"
+                    />
+
+                    <div className="profile-info flex-grow-1">
+                      <h1 className="profile-username">
+                        {profileUser?.username || "Developer"}
+                      </h1>
+                      <p className="profile-join-date">
+                        Joined:{" "}
+                        {profileUser?.createdAt
+                          ? new Date(profileUser.createdAt).toLocaleDateString()
+                          : "July 2026"}
+                      </p>
+
+                      <div className="d-flex justify-content-center justify-content-sm-start gap-4">
+                        <div className="profile-stat-box">
+                          <span className="stat-number">{snippets.length}</span>
+                          <SquareDashedBottomCode size={18} />
+                        </div>
+                        <div className="profile-stat-box">
+                          <span className="stat-number">
+                            {snippets.reduce(
+                              (acc, curr) => acc + (curr.starsCount || 0),
+                              0,
+                            )}
+                          </span>
+                          <Star size={18} />
+                        </div>
+                      </div>
+                    </div>
+                  </MyCardContent>
+                </MyCard>
+
+                <h3 className="feed-title mb-4">
+                  {userId
+                    ? `${profileUser?.username}'s Snippets`
+                    : "My Snippets"}
+                </h3>
+
+                <div className="d-flex flex-column gap-4">
+                  {snippets.length === 0 ? (
+                    <EmptyState
+                      title="No snippets found for this user."
+                      message={displayMessage}
+                    />
+                  ) : (
+                    snippets.map((snippet) => {
+                      const snippetWithUserData = {
+                        ...snippet,
+                        user_id: profileUser,
+                      };
+                      return (
+                        <SnippetCard
+                          key={snippet._id}
+                          snippet={snippetWithUserData}
+                          onToggleStar={handleProfileStarToggle}
+                        />
+                      );
+                    })
+                  )}
+                  {/* <Pagination/> */}
+                </div>
+              </>
+            )}
+          </Col>
+        </Row>
+      </Container>
     </BaseLayout>
   );
 };
