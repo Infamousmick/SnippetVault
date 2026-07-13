@@ -27,7 +27,8 @@ const OauthSuccess = () => {
         );
 
         if (response.ok) {
-          const userData = await response.json();
+          const data = await response.json();
+          const userData = data.user;
           localStorage.setItem("user", JSON.stringify(userData));
 
           loginUser(userData);
