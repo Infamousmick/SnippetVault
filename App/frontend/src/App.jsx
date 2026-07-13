@@ -25,7 +25,7 @@ function App() {
               <Route path="/oauth/success/" element={<OauthSuccess />} />
 
               <Route
-                path="/profile"
+                path="/profile/:userId?"
                 element={
                   <ProtectedRoute>
                     <ProfilePage />
