@@ -2,6 +2,26 @@
 
 All notable changes to the SnippetVault project will be documented in this file.
 
+## [1.5.0] - 2026-07-13
+
+### ✨ Features
+
+- **User Profile Hub:** Implemented dedicated profile pages allowing developers to showcase their published snippets.
+- **Profile Search & Pagination:** Integrated real-time, debounced regex search and dedicated pagination specifically for browsing individual user profiles.
+- **Starring System:** Introduced the ability to "star" (favorite) snippets. 
+
+### 🎨 Improvements
+
+- **Component Architecture Refactoring:** Decoupled `PaginationControls` into a standalone, reusable "dumb component" for consistent global use across the Feed and Profile pages.
+- **Dynamic Empty States:** Upgraded the `EmptyState` component logic to dynamically adapt its UI and messaging based on the user's specific context (e.g., viewing an empty profile vs. returning zero search results).
+- **Auth & Routing Optimization:** Resolved nested data extraction issues during OAuth callbacks and updated routing logic to seamlessly handle optional `userId` parameters for profile navigation.
+- **Version Display:** Refined the version badge formatting logic in the Navbar to strip `.0` suffixes for a cleaner UI.
+
+### 🛡️ Security & Bug Fixes
+
+- **Mass Assignment Prevention:** Patched backend snippet creation and update routes to prevent mass assignment vulnerabilities.
+- **Input Sanitization:** Added strict frontend sanitization for tags to automatically strip out unwanted hashtags before database submission.
+
 ## [1.4.0] - 2026-07-09
 
 ### ✨ Features

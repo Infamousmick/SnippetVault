@@ -15,7 +15,7 @@ import "./ProfilePage.css";
 const ProfilePage = () => {
   const { userId } = useParams();
   const { user, logoutUser } = useContext(AuthContext);
-  const { handleToggleStar } = useContext(SnippetContext);
+  const { handleToggleStar, debouncedQuery } = useContext(SnippetContext);
 
   const [snippets, setSnippets] = useState([]);
   const [profileUser, setProfileUser] = useState(null);
@@ -23,15 +23,17 @@ const ProfilePage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [alert, setAlert] = useState({ text: null, type: "danger" });
+  const displayTitle = userId
+    ? "No snippets found for this user."
+    : "No snippet found in your profile";
   const displayMessage = userId
     ? "This developer hasn't shared any snippets yet."
     : "You haven't published anything yet. Share your first shell command, script, or React component to get started!";
-
   const targetUserId = userId || user?._id;
 
   useEffect(() => {
     setPage(1);
-  }, [targetUserId]);
+  }, [targetUserId, debouncedQuery]);
 
   const handleProfileStarToggle = async (snippetId, currentUserId) => {
     setSnippets((prevSnippets) =>
@@ -62,7 +64,7 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}?page=${page}&pageSize=5`,
+          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}?page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -92,7 +94,7 @@ const ProfilePage = () => {
     if (targetUserId) {
       fetchProfileData();
     }
-  }, [targetUserId, user, logoutUser, page]);
+  }, [targetUserId, user, logoutUser, page, debouncedQuery]);
 
   return (
     <BaseLayout>
@@ -173,8 +175,9 @@ const ProfilePage = () => {
                 <div className="d-flex flex-column gap-4">
                   {snippets.length === 0 ? (
                     <EmptyState
-                      title="No snippets found for this user."
-                      message={displayMessage}
+                      title={debouncedQuery ? "" : displayTitle}
+                      message={debouncedQuery ? "" : displayMessage}
+                      searchQuery={debouncedQuery}
                     />
                   ) : (
                     snippets.map((snippet) => {
