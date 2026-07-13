@@ -135,14 +135,3 @@
     background-color: var(--bg-dark);
 
 }
-
-.pagination-btn {
-
-    transition: all 0.3s ease;
-}
-.pagination-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    background-color: var(--bg-hover-light);
-    border-color: transparent;
-}
