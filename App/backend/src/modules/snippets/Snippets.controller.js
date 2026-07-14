@@ -2,7 +2,8 @@ const snippetsService = require("./Snippets.service");
 
 const getAllSnippets = async (req, res, next) => {
   try {
-    const { page, pageSize, queryStr, sort } = req.query;
+    const userId = req.user._id;
+    const { page, pageSize, queryStr, sort, starred } = req.query;
     let sortQuery;
     if (sort === "Most Forked") {
       sortQuery = { forks: -1, createdAt: -1 };
@@ -20,6 +21,8 @@ const getAllSnippets = async (req, res, next) => {
         pageNum,
         pageSizeNum,
         queryStr,
+        starred,
+        userId,
       );
 
     res

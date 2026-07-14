@@ -18,7 +18,14 @@ const findCorrespondence = async (postId, userId) => {
   return snippet;
 };
 
-const getAllSnippets = async (sortQuery, pageNum, pageSizeNum, queryStr) => {
+const getAllSnippets = async (
+  sortQuery,
+  pageNum,
+  pageSizeNum,
+  queryStr,
+  starred,
+  userId,
+) => {
   const safeQueryStr = queryStr ? queryStr.replaceAll("#", "").trim() : "";
   const query = safeQueryStr
     ? {
@@ -31,8 +38,12 @@ const getAllSnippets = async (sortQuery, pageNum, pageSizeNum, queryStr) => {
       }
     : {};
 
+  if (starred === "true") {
+    query.stars = userId;
+  }
   const totalSnippets = await snippetsSchema.countDocuments(query);
   const totalPages = Math.ceil(totalSnippets / pageSizeNum);
+
   const allSnippets = await snippetsSchema
     .find(query)
     .limit(pageSizeNum)
