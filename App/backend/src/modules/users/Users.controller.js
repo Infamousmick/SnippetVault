@@ -14,7 +14,7 @@ const getUser = async (req, res, next) => {
       queryStr,
     );
 
-    res.status(200).send({ statusCode: 200, user });
+    res.status(200).json({ statusCode: 200, user });
   } catch (e) {
     next(e);
   }
@@ -27,7 +27,7 @@ const editUser = async (req, res, next) => {
     const { body } = req;
     const editedUser = await usersService.editUser(userId, loggedUserId, body);
 
-    res.status(200).send({
+    res.status(200).json({
       statusCode: 200,
       message: "User info updated",
       user: editedUser,
@@ -44,7 +44,7 @@ const deleteUser = async (req, res, next) => {
 
     const deletedUser = await usersService.deleteUser(userId, loggedUserId);
 
-    res.status(200).send({
+    res.status(200).json({
       statusCode: 200,
       message: "User deleted successfully",
       user: deletedUser,
@@ -69,7 +69,7 @@ const uploadAvatar = async (req, res, next) => {
       imageUrl,
     );
 
-    res.status(200).send({
+    res.status(200).json({
       statusCode: 200,
       message: "Avatar uploaded successfully",
       user: updatedUser,

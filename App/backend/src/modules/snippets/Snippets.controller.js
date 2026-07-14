@@ -24,7 +24,7 @@ const getAllSnippets = async (req, res, next) => {
 
     res
       .status(200)
-      .send({ statusCode: 200, allSnippets, totalSnippets, totalPages });
+      .json({ statusCode: 200, allSnippets, totalSnippets, totalPages });
   } catch (e) {
     next(e);
   }
@@ -34,7 +34,7 @@ const getSingleSnippet = async (req, res, next) => {
   try {
     const { postId } = req.params;
     const snippet = await snippetsService.getSingleSnippet(postId);
-    res.status(200).send({ statusCode: 200, snippet });
+    res.status(200).json({ statusCode: 200, snippet });
   } catch (e) {
     next(e);
   }
@@ -50,7 +50,7 @@ const newSnippet = async (req, res, next) => {
 
     const newSnippet = await snippetsService.newSnippet(snippetData);
 
-    res.status(201).send({
+    res.status(201).json({
       statusCode: 201,
       message: "New Snippet Post posted!",
       newSnippet,
@@ -66,7 +66,7 @@ const getMySnippets = async (req, res, next) => {
 
     const mySnippets = await snippetsService.getMySnippets(userId);
 
-    res.status(200).send({ statusCode: 200, mySnippets });
+    res.status(200).json({ statusCode: 200, mySnippets });
   } catch (e) {
     next(e);
   }
@@ -84,7 +84,7 @@ const editSnippet = async (req, res, next) => {
       userId,
     );
 
-    res.status(200).send({
+    res.status(200).json({
       statusCode: 200,
       message: "Post edited successfully",
       editedSnippet,
@@ -101,7 +101,7 @@ const deleteSnippet = async (req, res, next) => {
 
     const deletedSnippet = await snippetsService.deleteSnippet(postId, userId);
 
-    res.status(200).send({
+    res.status(200).json({
       statusCode: 200,
       message: " Post deleted successfully",
       deletedSnippet,
