@@ -129,9 +129,15 @@ const Login = () => {
                 <span>or continue with your email</span>
               </div>
 
-              {err && <CustomAlert text={err} type="danger" />}
+              {err && (
+                <div className="mb-2">
+                  <CustomAlert text={err} type="danger" />
+                </div>
+              )}
               {isLoggedIn && (
-                <CustomAlert text="Login successfully!" type="success" />
+                <div className="mb-2">
+                  <CustomAlert text="Login successfully!" type="success" />
+                </div>
               )}
 
               <form

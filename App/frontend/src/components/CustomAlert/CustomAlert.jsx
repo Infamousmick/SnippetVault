@@ -1,9 +1,14 @@
 import "./CustomAlert.css";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 const CustomAlert = ({ text, type }) => {
   return (
-    <div className={`auth-alert alert alert-${type} p-2 text-center`}>
-      {text}
+    <div
+      className={`settings-message ${type} d-flex align-items-center text-start gap-2 p-3`}
+    >
+      {(type === "danger" || type === "warning") && <AlertTriangle size={16} />}
+      {type === "success" && <CheckCircle2 size={16} />}
+      <span>{text}</span>
     </div>
   );
 };

@@ -209,11 +209,13 @@ const CommentSection = ({ snippetId, onCountChange }) => {
       </div>
 
       {alert.text && (
-        <CustomAlert
-          text={alert.text}
-          type={alert.type}
-          onClose={() => setAlert({ text: null, type: "danger" })}
-        />
+        <div className="mb-2">
+          <CustomAlert
+            text={alert.text}
+            type={alert.type}
+            onClose={() => setAlert({ text: null, type: "danger" })}
+          />
+        </div>
       )}
 
       <div className="comments-list d-flex flex-column gap-3">

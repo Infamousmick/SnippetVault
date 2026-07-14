@@ -1,37 +1,45 @@
 import { useState, useContext, useEffect } from "react";
 import { Container, Tab, Nav, Row, Col } from "react-bootstrap";
-import {
-  ShieldAlert,
-  KeyRound,
-  Lock,
-  AlertTriangle,
-  CheckCircle2,
-  User,
-  Sparkles,
-} from "lucide-react";
+import { ShieldAlert, KeyRound, Lock, User, Sparkles } from "lucide-react";
 import "./SettingsPage.css";
 import BaseLayout from "../../Layout/BaseLayout";
 import MyButton from "../../components/MyButton/MyButton";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
+import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 const SettingsPage = () => {
   const { isLoggedIn, user, isOauth, updateUser } = useContext(AuthContext);
+
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
     newPassword: "",
     confirmPassword: "",
   });
   const [avatarFile, setAvatarFile] = useState(null);
-
-  const [uiMessage, setUiMessage] = useState({ type: null, text: "" });
-  const [isLoading, setIsLoading] = useState(false);
-
+  const [username, setUsername] = useState(user?.username || "");
+  const [passwordMessage, setPasswordMessage] = useState({
+    type: null,
+    text: "",
+  });
+  const [usernameMessage, setUsernameMessage] = useState({
+    type: null,
+    text: "",
+  });
+  const [avatarMessage, setAvatarMessage] = useState({ type: null, text: "" });
+  const [isPasswordLoading, setIsPasswordLoading] = useState(false);
+  const [isUsernameLoading, setIsUsernameLoading] = useState(false);
+  const [isAvatarLoading, setIsAvatarLoading] = useState(false);
   const [showPasswords, setShowPasswords] = useState({
     old: false,
     new: false,
     confirm: false,
   });
 
+  const specificError = (data) => {
+    return data.errors && data.errors.length > 0
+      ? data.errors[0].message
+      : data.message;
+  };
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({ ...prev, [name]: value }));
@@ -39,23 +47,25 @@ const SettingsPage = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setUiMessage({ type: null, text: "" });
+    setPasswordMessage({ type: null, text: "" });
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      setUiMessage({ type: "error", text: "New passwords do not match!" });
+      setPasswordMessage({
+        type: "danger",
+        text: "New passwords do not match!",
+      });
       return;
     }
 
     if (passwordData.newPassword.length < 8) {
-      setUiMessage({
-        type: "error",
+      setPasswordMessage({
+        type: "danger",
         text: "New password must be at least 8 characters long.",
       });
       return;
     }
 
-    setIsLoading(true);
-
+    setIsPasswordLoading(true);
     const token = localStorage.getItem("token");
 
     try {
@@ -83,10 +93,12 @@ const SettingsPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Error while updating the password..");
+        throw new Error(
+          specificError(data) || "Error while updating the password..",
+        );
       }
 
-      setUiMessage({ type: "success", text: data.message });
+      setPasswordMessage({ type: "success", text: data.message });
 
       setPasswordData({
         oldPassword: "",
@@ -94,9 +106,55 @@ const SettingsPage = () => {
         confirmPassword: "",
       });
     } catch (error) {
-      setUiMessage({ type: "error", text: error.message });
+      setPasswordMessage({ type: "danger", text: error.message });
     } finally {
-      setIsLoading(false);
+      setIsPasswordLoading(false);
+    }
+  };
+
+  const handleUsernameSubmit = async (e) => {
+    e.preventDefault();
+    setUsernameMessage({ type: null, text: "" });
+    setIsUsernameLoading(true);
+
+    try {
+      if (username === user.username) {
+        setUsernameMessage({
+          type: "warning",
+          text: "Set a username different from the current one.",
+        });
+        return;
+      }
+
+      const payload = {
+        username: username,
+      };
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/users/${user._id}`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          specificError(data) || "Error while updating the username..",
+        );
+      }
+
+      updateUser({ ...user, username: username });
+      setUsernameMessage({ type: "success", text: data.message });
+    } catch (error) {
+      setUsernameMessage({ type: "danger", text: error.message });
+    } finally {
+      setIsUsernameLoading(false);
     }
   };
 
@@ -106,11 +164,10 @@ const SettingsPage = () => {
 
   const handleAvatarSubmit = async (e) => {
     e.preventDefault();
-
     if (!avatarFile) return;
 
-    setIsLoading(true);
-    setUiMessage({ type: null, text: "" });
+    setIsAvatarLoading(true);
+    setAvatarMessage({ type: null, text: "" });
 
     try {
       const token = localStorage.getItem("token");
@@ -132,15 +189,17 @@ const SettingsPage = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || "Error while uploading the avatar..");
+        throw new Error(
+          specificError(data) || "Error while uploading the avatar..",
+        );
       }
 
-      setUiMessage({ type: "success", text: data.message });
+      setAvatarMessage({ type: "success", text: data.message });
       updateUser(data.user);
     } catch (error) {
-      setUiMessage({ type: "error", text: error.message });
+      setAvatarMessage({ type: "danger", text: error.message });
     } finally {
-      setIsLoading(false);
+      setIsAvatarLoading(false);
     }
   };
 
@@ -260,26 +319,24 @@ const SettingsPage = () => {
                           />
                         </div>
 
-                        {uiMessage.text && (
-                          <div
-                            className={`settings-message ${uiMessage.type} mt-2`}
-                          >
-                            {uiMessage.type === "error" ? (
-                              <AlertTriangle size={16} />
-                            ) : (
-                              <CheckCircle2 size={16} />
-                            )}
-                            <span>{uiMessage.text}</span>
+                        {passwordMessage.text && (
+                          <div className="mt-2">
+                            <CustomAlert
+                              text={passwordMessage.text}
+                              type={passwordMessage.type}
+                            />
                           </div>
                         )}
 
                         <div className="mt-3">
                           <MyButton
                             type="submit"
-                            disabled={isLoading}
+                            disabled={isPasswordLoading}
                             className="px-4"
                           >
-                            {isLoading ? "Updating..." : "Update Password"}
+                            {isPasswordLoading
+                              ? "Updating..."
+                              : "Update Password"}
                           </MyButton>
                         </div>
                       </form>
@@ -312,56 +369,105 @@ const SettingsPage = () => {
                     </p>
                   </div>
 
-                  <form
-                    onSubmit={handleAvatarSubmit}
-                    className="d-flex flex-column gap-3 max-w-md"
-                  >
-                    <div className="form-group">
-                      <label htmlFor="avatarUpload" className="settings-label">
-                        <User size={14} /> Profile Picture
-                      </label>
-
-                      <label
-                        htmlFor="avatarUpload"
-                        className="settings-input settings-file-upload-label d-flex align-items-center justify-content-center text-secondary m-0"
-                      >
-                        {avatarFile
-                          ? avatarFile.name
-                          : "Click to choose an image 📸"}
-                      </label>
-
-                      <input
-                        type="file"
-                        id="avatarUpload"
-                        accept="image/jpeg, image/png, image/webp"
-                        className="d-none"
-                        onChange={handleFileChange}
-                      />
-                    </div>
-
-                    {uiMessage.text && (
-                      <div
-                        className={`settings-message ${uiMessage.type} mt-2`}
-                      >
-                        {uiMessage.type === "error" ? (
-                          <AlertTriangle size={16} />
-                        ) : (
-                          <CheckCircle2 size={16} />
-                        )}
-                        <span>{uiMessage.text}</span>
+                  <div className="mb-5">
+                    <h5 className="settings-section-title mb-3">
+                      Change Nickname
+                    </h5>
+                    <form
+                      onSubmit={handleUsernameSubmit}
+                      className="d-flex flex-column gap-3 max-w-md"
+                    >
+                      <div className="form-group">
+                        <label
+                          htmlFor="usernameUpdate"
+                          className="settings-label"
+                        >
+                          <User size={14} /> Nickname
+                        </label>
+                        <input
+                          type="text"
+                          id="usernameUpdate"
+                          name="username"
+                          className="settings-input"
+                          placeholder={user?.username || "Enter new nickname"}
+                          value={username}
+                          onChange={(e) => setUsername(e.target.value)}
+                          required
+                          minLength={3}
+                        />
                       </div>
-                    )}
 
-                    <div className="mt-3">
-                      <MyButton
-                        type="submit"
-                        disabled={isLoading || !avatarFile}
-                        className="px-4"
-                      >
-                        {isLoading ? "Uploading..." : "Upload Avatar"}
-                      </MyButton>
-                    </div>
-                  </form>
+                      {usernameMessage.text && (
+                        <div className="mt-2">
+                          <CustomAlert
+                            text={usernameMessage.text}
+                            type={usernameMessage.type}
+                          />
+                        </div>
+                      )}
+
+                      <div className="mt-2">
+                        <MyButton
+                          type="submit"
+                          disabled={isUsernameLoading}
+                          className="px-4"
+                        >
+                          {isUsernameLoading
+                            ? "Updating..."
+                            : "Update Nickname"}
+                        </MyButton>
+                      </div>
+                    </form>
+                  </div>
+
+                  <hr className="my-5 settings-divider" />
+
+                  <div className="mb-4">
+                    <h5 className="settings-section-title mb-3">
+                      Profile Picture
+                    </h5>
+                    <form
+                      onSubmit={handleAvatarSubmit}
+                      className="d-flex flex-column gap-3 max-w-md"
+                    >
+                      <div className="form-group">
+                        <label
+                          htmlFor="avatarUpload"
+                          className="settings-input settings-file-upload-label d-flex align-items-center justify-content-center text-secondary m-0"
+                        >
+                          {avatarFile
+                            ? avatarFile.name
+                            : "Click to choose an image 📸"}
+                        </label>
+                        <input
+                          type="file"
+                          id="avatarUpload"
+                          accept="image/jpeg, image/png, image/webp"
+                          className="d-none"
+                          onChange={handleFileChange}
+                        />
+                      </div>
+
+                      {avatarMessage.text && (
+                        <div className="mt-2">
+                          <CustomAlert
+                            text={avatarMessage.text}
+                            type={avatarMessage.type}
+                          />
+                        </div>
+                      )}
+
+                      <div className="mt-3">
+                        <MyButton
+                          type="submit"
+                          disabled={isAvatarLoading || !avatarFile}
+                          className="px-4"
+                        >
+                          {isAvatarLoading ? "Uploading..." : "Upload Avatar"}
+                        </MyButton>
+                      </div>
+                    </form>
+                  </div>
                 </Tab.Pane>
 
                 <Tab.Pane eventKey="ai">

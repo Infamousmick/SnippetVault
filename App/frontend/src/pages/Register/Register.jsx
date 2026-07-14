@@ -129,9 +129,15 @@ const Register = () => {
                 <span>or continue with your email</span>
               </div>
 
-              {err && <CustomAlert text={err} type="danger" />}
+              {err && (
+                <div className="mb-2">
+                  <CustomAlert text={err} type="danger" />
+                </div>
+              )}
               {isRegistered && (
-                <CustomAlert text="Registered successfully!" type="success" />
+                <div className="mb-2">
+                  <CustomAlert text="Registered successfully!" type="success" />
+                </div>
               )}
 
               <form

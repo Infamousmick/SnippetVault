@@ -59,28 +59,6 @@
     box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
 }
 
-.settings-message {
-    padding: 0.75rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.settings-message.error {
-    background-color: rgba(239, 68, 68, 0.1);
-    color: var(--accent-danger);
-    border: 1px solid rgba(239, 68, 68, 0.2);
-}
-
-.settings-message.success {
-    background-color: rgba(16, 185, 129, 0.1);
-    color: var(--accent-green);
-    border: 1px solid rgba(16, 185, 129, 0.2);
-}
-
-
 .settings-sidebar .nav-link {
     color: var(--text-secondary);
     border-radius: 8px;
@@ -150,4 +128,9 @@
 .settings-file-upload-label {
     cursor: pointer;
     border-style: dashed;
+}
+
+.settings-divider {
+    border-color: var(--border-color);
+    opacity: 0.5;
 }
