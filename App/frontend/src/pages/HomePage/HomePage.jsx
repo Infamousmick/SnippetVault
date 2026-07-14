@@ -2,7 +2,7 @@ import { useContext, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
-import { Flame, Plus, TrendingUp, Lock, AlertCircle } from "lucide-react";
+import { Flame, Plus, TrendingUp, Lock, AlertCircle, Star } from "lucide-react";
 import SnippetForm from "../../components/SnippetForm/SnippetForm";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
@@ -42,6 +42,8 @@ const HomePage = () => {
     totalPages,
     debouncedQuery,
     isLoading,
+    isStarredOnly,
+    setIsStarredOnly,
   } = useContext(SnippetContext);
 
   const renderFeedContent = () => {
@@ -153,6 +155,23 @@ const HomePage = () => {
                     </button>
                   );
                 })}
+
+                {isLoggedIn && (
+                  <button
+                    type="button"
+                    className={`btn-starred-toggle ms-auto d-flex align-items-center gap-2 ${isStarredOnly ? "active" : ""}`}
+                    onClick={() => {
+                      setIsStarredOnly(!isStarredOnly);
+                      setPage(1);
+                    }}
+                  >
+                    <Star
+                      size={16}
+                      className={isStarredOnly ? "fill-current" : ""}
+                    />
+                    Starred
+                  </button>
+                )}
               </div>
 
               {renderFeedContent()}
