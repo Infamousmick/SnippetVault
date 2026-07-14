@@ -131,7 +131,7 @@ const Register = () => {
 
               {err && <CustomAlert text={err} type="danger" />}
               {isRegistered && (
-                <CustomAlert text="Login successfully!" type="success" />
+                <CustomAlert text="Registered successfully!" type="success" />
               )}
 
               <form
