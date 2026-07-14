@@ -7,21 +7,22 @@ const {
 } = require("../../middlewares/validation/SnippetsValidation");
 const snippetsController = require("./Snippets.controller");
 
-snippets.get("/all", snippetsController.getAllSnippets);
-snippets.get("/single/:postId", snippetsController.getSingleSnippet);
+snippets.get("/", snippetsController.getAllSnippets);
+snippets.get("/mine", snippetsController.getMySnippets);
+
+snippets.get("/:postId", snippetsController.getSingleSnippet);
 snippets.post(
-  "/new",
+  "/",
   postValidationRules,
   validate,
   snippetsController.newSnippet,
 );
-snippets.get("/mySnippets", snippetsController.getMySnippets);
 snippets.patch(
-  "/edit/:postId",
+  "/:postId",
   editValidationRules,
   validate,
   snippetsController.editSnippet,
 );
-snippets.delete("/delete/:postId", snippetsController.deleteSnippet);
-snippets.patch("/star/:postId", snippetsController.toggleStar);
+snippets.delete("/:postId", snippetsController.deleteSnippet);
+snippets.patch("/:postId/star", snippetsController.toggleStar);
 module.exports = snippets;

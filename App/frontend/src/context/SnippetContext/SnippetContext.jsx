@@ -44,7 +44,7 @@ export const SnippetProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/all?sort=${activeFilter}&page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/?sort=${activeFilter}&page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -82,7 +82,7 @@ export const SnippetProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/new`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/`,
         {
           method: "POST",
           headers: {
@@ -119,7 +119,7 @@ export const SnippetProvider = ({ children }) => {
       const token = localStorage.getItem("token");
 
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/edit/${snippetId}`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}`,
         {
           method: "PATCH",
           headers: {
@@ -151,7 +151,7 @@ export const SnippetProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/delete/${snippetId}`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}`,
         {
           method: "DELETE",
           headers: {
@@ -200,7 +200,7 @@ export const SnippetProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/star/${snippetId}`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}/star`,
         {
           method: "PATCH",
           headers: {
