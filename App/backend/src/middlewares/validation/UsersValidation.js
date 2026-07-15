@@ -16,6 +16,15 @@ const editUserValidationRules = [
     .withMessage("If provided, must be a valid email address"),
 ];
 
+const updateGeminiKeyValidationRules = [
+  body("gemini_key")
+    .trim()
+    .notEmpty()
+    .withMessage("Gemini API Key is required and cannot be empty")
+    .isString()
+    .withMessage("Gemini API Key must be a valid string"),
+];
+
 const validate = (req, res, next) => {
   const errors = validationResult(req);
   if (errors.isEmpty()) {
@@ -30,4 +39,8 @@ const validate = (req, res, next) => {
   next(new BadRequestException("User data validation error", extractedErrors));
 };
 
-module.exports = { editUserValidationRules, validate };
+module.exports = {
+  editUserValidationRules,
+  updateGeminiKeyValidationRules,
+  validate,
+};
