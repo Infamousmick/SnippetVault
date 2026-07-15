@@ -74,6 +74,9 @@ To run SnippetVault locally for development and testing, follow these steps:
    GOOGLE_CLIENT_ID=your_google_client_id
    GOOGLE_CLIENT_SECRET=your_google_client_secret
    GOOGLE_CALLBACK_URL=http://localhost:9099/auth/google/callback
+
+   # Security & Encryption
+   CRYPTO_SECRET=your_32_byte_crypto_secret
    ```
 
    - Start the development server:
