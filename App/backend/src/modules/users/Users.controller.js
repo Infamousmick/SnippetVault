@@ -1,6 +1,6 @@
 const usersService = require("./Users.service");
 const HttpException = require("../../exception/index");
-
+const { encryptData } = require("../../utils/encryption");
 const getUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
@@ -79,4 +79,42 @@ const uploadAvatar = async (req, res, next) => {
   }
 };
 
-module.exports = { uploadAvatar, getUser, editUser, deleteUser };
+const updateGeminiKey = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const { gemini_key } = req.body;
+
+    if (!gemini_key) {
+      throw new HttpException("No Gemini API Key provided", 400);
+    }
+    const encryptedKey = encryptData(gemini_key);
+    const user = await usersService.updateGeminiKey(userId, encryptedKey);
+
+    res
+      .status(200)
+      .json({ statusCode: 200, message: "Gemini API Key updated.", user });
+  } catch (e) {
+    next(e);
+  }
+};
+
+const deleteGeminiKey = async (req, res, next) => {
+  try {
+    const { userId } = req.params;
+    const user = await usersService.deleteGeminiKey(userId);
+
+    res
+      .status(200)
+      .json({ statusCode: 200, message: "Gemini API Key removed.", user });
+  } catch (e) {
+    next(e);
+  }
+};
+module.exports = {
+  uploadAvatar,
+  getUser,
+  editUser,
+  deleteUser,
+  updateGeminiKey,
+  deleteGeminiKey,
+};

@@ -3,6 +3,7 @@ const users = express.Router();
 const usersController = require("./Users.controller");
 const {
   editUserValidationRules,
+  updateGeminiKeyValidationRules,
   validate,
 } = require("../../middlewares/validation/UsersValidation");
 const cloudUpload = require("../../middlewares/upload/cloudUpload");
@@ -15,6 +16,13 @@ users.patch(
   validate,
   usersController.editUser,
 );
+users.patch(
+  "/:userId/gemini-key",
+  verifyOwnership,
+  updateGeminiKeyValidationRules,
+  validate,
+  usersController.updateGeminiKey,
+);
 users.post(
   "/:userId/avatar",
   verifyOwnership,
@@ -22,5 +30,6 @@ users.post(
   usersController.uploadAvatar,
 );
 users.delete("/:userId", usersController.deleteUser);
+users.delete("/:userId/gemini-key", verifyOwnership, usersController.deleteGeminiKey)
 
 module.exports = users;

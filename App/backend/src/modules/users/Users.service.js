@@ -3,6 +3,7 @@ const HttpException = require("../../exception/index");
 const usersSchema = require("./Users.schema");
 const snippetsSchema = require("../snippets/Snippets.schema");
 const cloudinary = require("cloudinary").v2;
+const sanitizeUser = require("../../utils/sanitizeUser");
 
 const extractPublicIdFromUrl = (url) => {
   if (!url) return null;
@@ -34,10 +35,7 @@ const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
       }
     : {};
 
-  const user = await usersSchema
-    .findById(userId)
-    .select("-password_hash")
-    .lean();
+  const user = await usersSchema.findById(userId).lean();
 
   if (!user) {
     throw new UserNotFoundException();
@@ -52,7 +50,12 @@ const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
     .find({ user_id: userId, ...query })
     .limit(pageSizeNum)
     .skip((pageNum - 1) * pageSizeNum);
-  return { ...user, snippets: userSnippets, totalSnippets, totalPages };
+  return {
+    ...sanitizeUser(user),
+    snippets: userSnippets,
+    totalSnippets,
+    totalPages,
+  };
 };
 
 const editUser = async (userId, loggedUserId, body) => {
@@ -60,15 +63,13 @@ const editUser = async (userId, loggedUserId, body) => {
     throw new HttpException("You are not allowed to edit this profile.", 403);
   }
 
-  const user = await usersSchema
-    .findByIdAndUpdate(userId, body, { new: true })
-    .select("-password_hash");
+  const user = await usersSchema.findByIdAndUpdate(userId, body, { new: true });
 
   if (!user) {
     throw new UserNotFoundException();
   }
 
-  return user;
+  return sanitizeUser(user);
 };
 
 const deleteUser = async (userId, loggedUserId) => {
@@ -76,15 +77,13 @@ const deleteUser = async (userId, loggedUserId) => {
     throw new HttpException("You are not allowed to delete this profile.", 403);
   }
 
-  const user = await usersSchema
-    .findByIdAndDelete(userId)
-    .select("-password_hash");
+  const user = await usersSchema.findByIdAndDelete(userId);
   if (!user) {
     throw new UserNotFoundException();
   }
 
   await snippetsSchema.deleteMany({ user_id: userId });
-  return user;
+  return sanitizeUser(user);
 };
 
 const uploadAvatar = async (userId, loggedUserId, imageUrl) => {
@@ -94,7 +93,7 @@ const uploadAvatar = async (userId, loggedUserId, imageUrl) => {
       403,
     );
   }
-  const user = await usersSchema.findById(userId).select("-password_hash");
+  const user = await usersSchema.findById(userId);
 
   if (!user) {
     throw new UserNotFoundException();
@@ -112,7 +111,42 @@ const uploadAvatar = async (userId, loggedUserId, imageUrl) => {
   user.avatar_url = imageUrl;
 
   await user.save();
-  return user;
+  return sanitizeUser(user);
 };
 
-module.exports = { uploadAvatar, getUser, editUser, deleteUser };
+const updateGeminiKey = async (userId, payload) => {
+  const user = await usersSchema.findByIdAndUpdate(
+    userId,
+    { gemini_key: payload },
+    { new: true },
+  );
+
+  if (!user) {
+    throw new UserNotFoundException();
+  }
+
+  return sanitizeUser(user);
+};
+
+const deleteGeminiKey = async (userId) => {
+  const user = await usersSchema.findByIdAndUpdate(
+    userId,
+    { $unset: { gemini_key: "" } },
+    { new: true },
+  );
+
+  if (!user) {
+    throw new UserNotFoundException();
+  }
+
+  return sanitizeUser(user);
+};
+
+module.exports = {
+  uploadAvatar,
+  getUser,
+  editUser,
+  deleteUser,
+  updateGeminiKey,
+  deleteGeminiKey,
+};

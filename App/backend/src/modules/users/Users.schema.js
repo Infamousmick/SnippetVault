@@ -32,6 +32,9 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: "https://placehold.co/150",
     },
+    gemini_key: {
+      type: String,
+    },
   },
   { timestamps: true, strict: true },
 );
