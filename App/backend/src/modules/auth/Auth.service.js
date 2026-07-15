@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const HttpException = require("../../exception/index");
+const sanitizeUser = require("../../utils/sanitizeUser");
 
 const UsersSchema = require("../users/Users.schema");
 
@@ -20,9 +21,7 @@ const registerUser = async (body) => {
     password_hash: password,
   });
   await newUser.save();
-  const safeUser = newUser.toObject();
-  delete safeUser.password_hash;
-  return safeUser;
+  return sanitizeUser(newUser);
 };
 
 const login = async (body) => {
@@ -48,21 +47,17 @@ const login = async (body) => {
     { expiresIn: "1d" },
   );
 
-  const safeUser = user.toObject();
-  delete safeUser.password_hash;
-  return { token, user: safeUser };
+  return { token, user: sanitizeUser(user) };
 };
 
 const getMe = async (userId) => {
-  const currentUser = await UsersSchema.findById(userId)
-    .select("-password_hash")
-    .lean();
+  const user = await UsersSchema.findById(userId).lean();
 
-  if (!currentUser) {
+  if (!user) {
     throw new HttpException("User not found", 404);
   }
 
-  return currentUser;
+  return sanitizeUser(user);
 };
 
 const changePassword = async (userId, oldPassword, newPassword) => {
