@@ -8,6 +8,7 @@ const SnippetsRoute = require("./src/modules/snippets/Snippets.routes");
 const CommentsRoute = require("./src/modules/comments/Comments.routes");
 const UsersRoute = require("./src/modules/users/Users.routes");
 const githubOauthRoute = require("./src/modules/oauth/oauth.route");
+const AiRoute = require("./src/modules/ai/Ai.routes")
 const verifyToken = require("./src/middlewares/auth/auth.middlewares");
 const cors = require("cors");
 const errorHandler = require("./src/middlewares/errors/errorHandler");
@@ -22,6 +23,7 @@ server.use("/oauth", githubOauthRoute);
 server.use(verifyToken);
 server.use("/snippets", SnippetsRoute);
 server.use("/snippets/:snippetId/comments", CommentsRoute);
+server.use("/ai", AiRoute)
 server.use("/users", UsersRoute);
 
 const initServer = async () => {
