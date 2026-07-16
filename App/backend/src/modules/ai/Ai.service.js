@@ -7,6 +7,16 @@ const SnippetNotFoundException = require("../../exception/snippets/SnippetsNotFo
 const { decryptData } = require("../../utils/encryption");
 const mongoose = require("mongoose");
 
+const sanitizeError = (plainError) => {
+  if (!plainError) return "Unknown error";
+  try {
+    const parsedData = JSON.parse(plainError);
+    return parsedData.error.message;
+  } catch (err) {
+    return plainError;
+  }
+};
+
 const getDecryptedApiKey = async (userId) => {
   const user = await usersSchema.findById(userId);
 
@@ -52,7 +62,10 @@ User's question: ${question}
 
     return response.text;
   } catch (err) {
-    throw new HttpException("Gemini API request failed", 502);
+    throw new HttpException(
+      sanitizeError(err.message) || "Gemini API request failed",
+      err.status || 502,
+    );
   }
 };
 
@@ -71,7 +84,10 @@ Respond with code only, without additional explanations, and without Markdown co
     });
     return response.text;
   } catch (err) {
-    throw new HttpException("Gemini API request failed", 502);
+    throw new HttpException(
+      sanitizeError(err.message) || "Gemini API request failed",
+      err.status || 502,
+    );
   }
 };
 
