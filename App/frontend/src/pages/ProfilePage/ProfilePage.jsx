@@ -167,7 +167,7 @@ const ProfilePage = () => {
                 </MyCard>
 
                 <h3 className="feed-title mb-4">
-                  {userId
+                  {userId && userId !== user?._id
                     ? `${profileUser?.username}'s Snippets`
                     : "My Snippets"}
                 </h3>

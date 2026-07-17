@@ -17,7 +17,7 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import appSettings from "../../../package.json";
 
-const appVersion = appSettings.version.replace(/\.0$/, '');
+const appVersion = appSettings.version.replace(/\.0$/, "");
 const MyNav = () => {
   const location = useLocation();
   const navigate = useNavigate();
@@ -67,7 +67,10 @@ const MyNav = () => {
 
         <nav className="d-none d-md-flex align-items-center gap-2 ms-2">
           {Links.map((link) => {
-            const isActive = location.pathname === link.href;
+            const isActive =
+              location.pathname === link.href ||
+              (link.href === "/profile" &&
+                location.pathname === `/profile/${user?._id}`);
             return (
               <Link
                 key={link.id}
