@@ -2,7 +2,15 @@ import { useContext, useState, useEffect, useCallback } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
-import { Flame, Plus, TrendingUp, Lock, AlertCircle, Star } from "lucide-react";
+import {
+  Flame,
+  Plus,
+  TrendingUp,
+  Lock,
+  AlertCircle,
+  Star,
+  Sparkles,
+} from "lucide-react";
 import SnippetForm from "../../components/SnippetForm/SnippetForm";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
@@ -44,6 +52,8 @@ const HomePage = () => {
     isLoading,
     isStarredOnly,
     setIsStarredOnly,
+    isAiOnly,
+    setIsAiOnly,
   } = useContext(SnippetContext);
 
   const renderFeedContent = () => {
@@ -157,20 +167,36 @@ const HomePage = () => {
                 })}
 
                 {isLoggedIn && (
-                  <button
-                    type="button"
-                    className={`btn-starred-toggle ms-auto d-flex align-items-center gap-2 ${isStarredOnly ? "active" : ""}`}
-                    onClick={() => {
-                      setIsStarredOnly(!isStarredOnly);
-                      setPage(1);
-                    }}
-                  >
-                    <Star
-                      size={16}
-                      className={isStarredOnly ? "fill-current" : ""}
-                    />
-                    Starred
-                  </button>
+                  <div className="ms-auto d-flex align-items-center gap-2">
+                    <button
+                      type="button"
+                      className={`btn-toggle btn-starred d-flex align-items-center gap-2 ${isStarredOnly ? "active" : ""}`}
+                      onClick={() => {
+                        setIsStarredOnly(!isStarredOnly);
+                        setPage(1);
+                      }}
+                    >
+                      <Star
+                        size={16}
+                        className={isStarredOnly ? "fill-current" : ""}
+                      />
+                      Starred
+                    </button>
+                    <button
+                      type="button"
+                      className={`btn-toggle btn-ai d-flex align-items-center gap-2 ${isAiOnly ? "active" : ""}`}
+                      onClick={() => {
+                        setIsAiOnly(!isAiOnly);
+                        setPage(1);
+                      }}
+                    >
+                      <Sparkles
+                        size={16}
+                        className={isAiOnly ? "fill-current" : ""}
+                      />
+                      Ai
+                    </button>
+                  </div>
                 )}
               </div>
 

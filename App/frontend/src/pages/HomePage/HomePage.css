@@ -20,6 +20,8 @@
     scrollbar-width: none;
 }
 
+
+
 .filters-container::-webkit-scrollbar {
     display: none;
 }
@@ -134,29 +136,48 @@
 }
 
 
-.btn-starred-toggle {
+.btn-toggle {
     border-radius: 9999px;
     padding: 6px 14px;
     font-size: 0.875rem;
     font-weight: 600;
-    border: 1px solid var(--accent-green);
+
     background-color: transparent;
-    color: var(--accent-green);
+
     transition: all 0.2s ease;
     cursor: pointer;
 }
 
+.btn-toggle.btn-starred {
+    color: var(--accent-green);
+    border: 1px solid var(--accent-green);
+}
 
-.btn-starred-toggle:hover {
+.btn-toggle.btn-ai {
+    color: var(--accent-ai);
+    border: 1px solid var(--accent-ai)
+}
+
+.btn-toggle.btn-starred:hover {
     background-color: rgba(16, 185, 129, 0.1);
 }
 
-.btn-starred-toggle.active {
+.btn-toggle.btn-ai:hover {
+    background-color: #9233ea34;
+}
+
+.btn-toggle.btn-starred.active {
     background-color: var(--accent-green);
     color: var(--bg-dark);
     box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
-.btn-starred-toggle .fill-current {
+.btn-toggle.btn-ai.active {
+    background-color: var(--accent-ai);
+    color: var(--bg-dark);
+    box-shadow: 0 0 10px #9233ea34;
+}
+
+.btn-toggle .fill-current {
     fill: currentColor;
 }

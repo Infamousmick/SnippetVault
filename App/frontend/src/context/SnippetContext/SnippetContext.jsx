@@ -26,6 +26,7 @@ export const SnippetProvider = ({ children }) => {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isStarredOnly, setIsStarredOnly] = useState(false);
+  const [isAiOnly, setIsAiOnly] = useState(false);
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -45,7 +46,7 @@ export const SnippetProvider = ({ children }) => {
     try {
       const token = localStorage.getItem("token");
       const response = await fetch(
-        `${import.meta.env.VITE_APP_SERVERURL}/snippets/?sort=${activeFilter}&page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}&starred=${isStarredOnly}`,
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/?sort=${activeFilter}&page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}&starred=${isStarredOnly}&ai=${isAiOnly}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -70,7 +71,7 @@ export const SnippetProvider = ({ children }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [activeFilter, page, debouncedQuery, logoutUser, isStarredOnly]);
+  }, [activeFilter, page, debouncedQuery, logoutUser, isStarredOnly, isAiOnly]);
 
   useEffect(() => {
     if (isLoggedIn) {
@@ -250,6 +251,8 @@ export const SnippetProvider = ({ children }) => {
     handleToggleStar,
     isStarredOnly,
     setIsStarredOnly,
+    isAiOnly,
+    setIsAiOnly,
   };
 
   return (
