@@ -26,6 +26,7 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import ReactMarkdown from "react-markdown";
 import CommentSection from "../CommentSection/CommentSection";
+import GeminiChatBox from "../GeminiChatBox/GeminiChatBox";
 
 const countItems = (value) => {
   if (Array.isArray(value)) return value.length;
@@ -43,6 +44,7 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
   const [localCommentsCount, setLocalCommentsCount] = useState(
     countItems(data.comments),
   );
+  const [isAiOpen, setIsAiOpen] = useState(false);
 
   const username = data.user_id?.username ?? "Guest";
   const avatar_url = data.user_id?.avatar_url ?? "https://placehold.co/32";
@@ -207,9 +209,17 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
             )}
             <span>{isCopied ? "Copied" : "Copy"}</span>
           </button>
-          <GeminiBtn />
+          <GeminiBtn onClick={() => setIsAiOpen(!isAiOpen)} />
         </div>
       </MyCardFooter>
+      {isAiOpen && (
+        <div className="snippet-ai-wrapper">
+          <GeminiChatBox
+            snippetId={data._id}
+            onClose={() => setIsAiOpen(false)}
+          />
+        </div>
+      )}
       {showComments && (
         <div className="snippet-comments-wrapper">
           <CommentSection

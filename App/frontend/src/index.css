@@ -39,6 +39,8 @@
     --mac-red: #ff5f56;
     --mac-yellow: #ffbd2e;
     --mac-green: #27c93f;
+    --accent-ai: #a855f7;
+    --accent-ai-hover: #9333ea;
 }
 
 ::selection {
@@ -169,6 +171,7 @@ a:hover {
 
     transition: all 0.3s ease;
 }
+
 .pagination-btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
