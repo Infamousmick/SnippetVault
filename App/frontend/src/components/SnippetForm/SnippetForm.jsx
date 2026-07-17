@@ -157,11 +157,15 @@ const SnippetForm = ({
 
         if (response.status === 429) {
           displayMessage =
-            "The AI ​​service is currently busy, or you have reached your request limit. Please try again later.";
+            "You've reached the limit of 5 AI requests per minute on this app. Please wait a moment and try again.";
+        }
+        if (response.status === 503) {
+          displayMessage =
+            "The Gemini API quota has been exceeded (external service limit). Please try again later.";
         }
         if (response.status === 502) {
           displayMessage =
-            "The AI ​​service is temporarily unavailable. Please try again later.";
+            "The AI service is temporarily unavailable. Please try again later.";
         }
 
         setAlert({ type: "danger", text: displayMessage });
