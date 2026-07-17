@@ -178,7 +178,7 @@ const SnippetForm = ({
       }));
       setPrettierError(null);
     } catch (error) {
-      console.error("Gemini Error:", error);
+      setAlert({ type: "danger", text: "Connection error. Please try again." });
     } finally {
       setIsGeneratingWithGemini(false);
     }
@@ -393,7 +393,7 @@ const SnippetForm = ({
 
                 <GeminiBtn
                   onClick={handleGeminiGeneration}
-                  disabled={isLoading}
+                  disabled={isLoading || isGeneratingWithGemini}
                   isLoading={isGeneratingWithGemini}
                 />
               </div>
