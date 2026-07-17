@@ -62,9 +62,16 @@ User's question: ${question}
 
     return response.text;
   } catch (err) {
+    if (err.status === 429) {
+      throw new HttpException(
+        "The Gemini API quota has been exceeded. Please try again later or check your plan.",
+        503,
+      );
+    }
+
     throw new HttpException(
       sanitizeError(err.message) || "Gemini API request failed",
-      err.status || 502,
+      502,
     );
   }
 };
@@ -84,9 +91,16 @@ Respond with code only, without additional explanations, and without Markdown co
     });
     return response.text;
   } catch (err) {
+    if (err.status === 429) {
+      throw new HttpException(
+        "The Gemini API quota has been exceeded. Please try again later or check your plan.",
+        503,
+      );
+    }
+
     throw new HttpException(
       sanitizeError(err.message) || "Gemini API request failed",
-      err.status || 502,
+      502,
     );
   }
 };
