@@ -24,6 +24,7 @@ const getAllSnippets = async (
   pageSizeNum,
   queryStr,
   starred,
+  ai,
   userId,
 ) => {
   const safeQueryStr = queryStr ? queryStr.replaceAll("#", "").trim() : "";
@@ -40,6 +41,10 @@ const getAllSnippets = async (
 
   if (starred === "true") {
     query.stars = userId;
+  }
+
+  if (ai === "true") {
+    query.is_ai_generated = true;
   }
   const totalSnippets = await snippetsSchema.countDocuments(query);
   const totalPages = Math.ceil(totalSnippets / pageSizeNum);
