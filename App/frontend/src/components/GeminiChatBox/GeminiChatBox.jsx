@@ -3,6 +3,10 @@ import { Sparkles, Send, X } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CustomAlert from "../CustomAlert/CustomAlert";
+import {
+  GEMINI_MODELS,
+  DEFAULT_GEMINI_MODEL,
+} from "../../constants/geminiModels";
 import "./GeminiChatBox.css";
 
 const GeminiChatBox = ({ snippetId, onClose }) => {
@@ -12,6 +16,7 @@ const GeminiChatBox = ({ snippetId, onClose }) => {
   const [alert, setAlert] = useState({ text: null, type: null });
   const { logoutUser } = useContext(AuthContext);
   const answerRef = useRef(null);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_GEMINI_MODEL);
 
   useEffect(() => {
     if (answer && answerRef.current) {
@@ -44,7 +49,7 @@ const GeminiChatBox = ({ snippetId, onClose }) => {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ question }),
+          body: JSON.stringify({ question, model: selectedModel }),
         },
       );
 
@@ -85,21 +90,38 @@ const GeminiChatBox = ({ snippetId, onClose }) => {
 
   return (
     <div className="gemini-chatbox">
-      <div className="gemini-chatbox-header d-flex justify-content-between align-items-center">
+      <div className="gemini-chatbox-header d-flex flex-wrap justify-content-between align-items-center gap-2">
         <div className="d-flex align-items-center gap-2">
           <Sparkles size={16} className="gemini-chatbox-icon" />
           <span className="gemini-chatbox-title">
             Ask Gemini about this snippet
           </span>
         </div>
-        <button
-          type="button"
-          className="gemini-chatbox-close"
-          onClick={onClose}
-          aria-label="Close"
-        >
-          <X size={18} />
-        </button>
+
+        <div className="d-flex align-items-center gap-2">
+          <select
+            className="gemini-model-select gemini-chatbox-model-select"
+            value={selectedModel}
+            onChange={(e) => setSelectedModel(e.target.value)}
+            disabled={isLoading}
+            aria-label="Select Gemini model"
+          >
+            {GEMINI_MODELS.map((m) => (
+              <option key={m.value} value={m.value}>
+                {m.label}
+              </option>
+            ))}
+          </select>
+
+          <button
+            type="button"
+            className="gemini-chatbox-close"
+            onClick={onClose}
+            aria-label="Close"
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
 
       {alert.text && (

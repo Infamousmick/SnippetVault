@@ -178,3 +178,38 @@ a:hover {
     background-color: var(--bg-hover-light);
     border-color: transparent;
 }
+
+.gemini-model-select {
+    background-color: var(--bg-dark);
+    border: 1px solid var(--border-input);
+    border-radius: 8px;
+    max-width: 140px;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+    padding: 0.35rem 0.6rem;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+}
+
+.gemini-model-select:focus {
+    outline: none;
+    border-color: var(--accent-ai);
+}
+
+.gemini-model-select:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.gemini-chatbox-model-row {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.gemini-chatbox-model-label {
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+    font-weight: 500;
+}

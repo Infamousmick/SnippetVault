@@ -27,6 +27,10 @@ import yaml from "prettier/plugins/yaml";
 import ReactMarkdown from "react-markdown";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CustomAlert from "../CustomAlert/CustomAlert";
+import {
+  GEMINI_MODELS,
+  DEFAULT_GEMINI_MODEL,
+} from "../../constants/geminiModels";
 
 const SUPPORTED_LANGUAGES = [
   { value: "javascript", label: "JavaScript" },
@@ -77,6 +81,7 @@ const SnippetForm = ({
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [alert, setAlert] = useState({ text: null, type: null });
   const { logoutUser } = useContext(AuthContext);
+  const [selectedModel, setSelectedModel] = useState(DEFAULT_GEMINI_MODEL);
 
   useEffect(() => {
     if (initialData) {
@@ -142,7 +147,7 @@ const SnippetForm = ({
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ description, language }),
+          body: JSON.stringify({ description, language, model: selectedModel }),
         },
       );
 
@@ -170,7 +175,7 @@ const SnippetForm = ({
 
         setAlert({ type: "danger", text: displayMessage });
 
-        throw new Error(errorData.message);
+        return;
       }
 
       const data = await response.json();
@@ -375,12 +380,25 @@ const SnippetForm = ({
           </div>
 
           <div className="form-group">
-            <div className="d-flex justify-content-between align-items-center mb-1">
+            <div className="d-flex justify-content-between flex-wrap align-items-center mb-1 gap-2">
               <label htmlFor="code" className="form-label mb-0">
                 <Code2 size={14} /> Code Snippet
               </label>
 
-              <div className="d-flex align-items-center gap-2">
+              <div className="d-flex flex-wrap align-items-center gap-2">
+                <select
+                  className="gemini-model-select"
+                  value={selectedModel}
+                  onChange={(e) => setSelectedModel(e.target.value)}
+                  disabled={isGeneratingWithGemini}
+                  aria-label="Select Gemini model"
+                >
+                  {GEMINI_MODELS.map((m) => (
+                    <option key={m.value} value={m.value}>
+                      {m.label}
+                    </option>
+                  ))}
+                </select>
                 <button
                   type="button"
                   onClick={handleManualFormat}
