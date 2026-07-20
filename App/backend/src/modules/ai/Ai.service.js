@@ -6,6 +6,7 @@ const GeminiKeyNotConfiguredException = require("../../exception/ai/GeminiKeyNot
 const SnippetNotFoundException = require("../../exception/snippets/SnippetsNotFoundException");
 const { decryptData } = require("../../utils/encryption");
 const mongoose = require("mongoose");
+const { AVAILABLE_MODELS, DEFAULT_MODEL } = require("../../utils/geminiModels");
 
 const sanitizeError = (plainError) => {
   if (!plainError) return "Unknown error";
@@ -31,7 +32,7 @@ const getDecryptedApiKey = async (userId) => {
   return apiKey;
 };
 
-const askAboutSnippet = async (userId, snippetId, question) => {
+const askAboutSnippet = async (userId, snippetId, question, model) => {
   if (!mongoose.Types.ObjectId.isValid(snippetId)) {
     throw new SnippetNotFoundException();
   }
@@ -54,9 +55,13 @@ ${snippet.code_content}
 User's question: ${question}
 `;
 
+  const selectedModel = AVAILABLE_MODELS.includes(model)
+    ? model
+    : DEFAULT_MODEL;
+
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: selectedModel,
       contents: prompt,
     });
 
@@ -76,7 +81,12 @@ User's question: ${question}
   }
 };
 
-const generateSnippetFromPrompt = async (userId, description, language) => {
+const generateSnippetFromPrompt = async (
+  userId,
+  description,
+  language,
+  model,
+) => {
   const apiKey = await getDecryptedApiKey(userId);
   const ai = new GoogleGenAI({ apiKey });
 
@@ -84,9 +94,12 @@ const generateSnippetFromPrompt = async (userId, description, language) => {
 Generate a code snippet in ${language} that does the following: ${description}.
 Respond with code only, without additional explanations, and without Markdown code fences.`;
 
+  const selectedModel = AVAILABLE_MODELS.includes(model)
+    ? model
+    : DEFAULT_MODEL;
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
+      model: selectedModel,
       contents: prompt,
     });
     return response.text;

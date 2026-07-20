@@ -1,6 +1,6 @@
 const { body, validationResult, matchedData } = require("express-validator");
 const BadRequestException = require("../../exception/BadRequestException");
-
+const { AVAILABLE_MODELS } = require("../../utils/geminiModels")
 const askAboutSnippetValidationRules = [
   body("question")
     .trim()
@@ -8,6 +8,10 @@ const askAboutSnippetValidationRules = [
     .withMessage("Question is mandatory")
     .isLength({ max: 500 })
     .withMessage("Question is too long"),
+  body("model")
+    .optional()
+    .isIn(AVAILABLE_MODELS)
+    .withMessage("Invalid model selection"),
 ];
 
 const generateSnippetValidationRules = [
@@ -18,6 +22,10 @@ const generateSnippetValidationRules = [
     .isLength({ max: 500 })
     .withMessage("Description is too long"),
   body("language").trim().notEmpty().withMessage("Language is mandatory"),
+  body("model")
+    .optional()
+    .isIn(AVAILABLE_MODELS)
+    .withMessage("Invalid model selection"),
 ];
 
 const validate = (req, res, next) => {
