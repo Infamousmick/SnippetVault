@@ -21,15 +21,16 @@ SnippetVault is your personal code hub. Share syntax-highlighted snippets, fork 
 ## 🚀 Features
 
 - **Code Management:** Create, edit, and organize code snippets across various languages.
-- **AI-Powered:** Integrated with Google's Gemini AI to explain code and assist developers.
+- **AI-Powered Suite:** Integrated with Google's Gemini AI to generate code from prompts, explain complex syntax, and analyze snippets via a dedicated ChatBox. Features dynamic model selection (Flash/Pro).
+- **Secure BYOK (Bring Your Own Key):** Users can safely input and manage their own Gemini API keys, protected by robust backend encryption.
 - **Auto-Formatting:** Built-in Prettier formatter directly in the browser.
-- **Secure Auth:** JWT-based authentication and profile management.
+- **Secure Auth & Profiles:** JWT-based authentication, complete profile management, and custom avatar upload system via Cloudinary.
 - **Responsive UI:** Dark-mode, mobile-first design tailored for coding on the go.
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React.js, React Router DOM, React-Bootstrap, React Syntax Highlighter, React Markdown (w/ DOMPurify), Google Generative AI SDK, Prettier, Lucide Icons & React Icons.
-- **Backend:** Node.js, Express.js, JWT (JSON Web Tokens) & Passport.js, Bcrypt, Multer, Cloudinary, Express-Validator.
+- **Frontend:** React.js, React Router DOM, React-Bootstrap, React Syntax Highlighter, React Markdown, Google Generative AI SDK, Prettier, Lucide Icons.
+- **Backend:** Node.js, Express.js, JWT & Passport.js, Bcrypt, Multer, Cloudinary, Express-Validator, Express-Rate-Limit.
 - **Database:** MongoDB, Mongoose.
 
 ## ⚙️ Local Installation
