@@ -134,3 +134,14 @@
     border-color: var(--border-color);
     opacity: 0.5;
 }
+
+.btn-danger-custom {
+    background-color: transparent !important;
+    border: 1px solid var(--accent-danger) !important;
+    color: var(--accent-danger) !important;
+}
+
+.btn-danger-custom:hover {
+    background-color: var(--accent-danger) !important;
+    color: white !important;
+}

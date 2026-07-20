@@ -1,6 +1,13 @@
 import { useState, useContext, useEffect } from "react";
 import { Container, Tab, Nav, Row, Col } from "react-bootstrap";
-import { ShieldAlert, KeyRound, Lock, User, Sparkles } from "lucide-react";
+import {
+  ShieldAlert,
+  KeyRound,
+  Lock,
+  User,
+  Sparkles,
+  Trash2,
+} from "lucide-react";
 import "./SettingsPage.css";
 import BaseLayout from "../../Layout/BaseLayout";
 import MyButton from "../../components/MyButton/MyButton";
@@ -8,7 +15,8 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 
 const SettingsPage = () => {
-  const { isLoggedIn, user, isOauth, updateUser } = useContext(AuthContext);
+  const { isLoggedIn, user, isOauth, updateUser, logoutUser } =
+    useContext(AuthContext);
 
   const [passwordData, setPasswordData] = useState({
     oldPassword: "",
@@ -34,6 +42,9 @@ const SettingsPage = () => {
     new: false,
     confirm: false,
   });
+  const [aiKey, setAiKey] = useState("");
+  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [aiMessage, setAiMessage] = useState({ type: null, text: "" });
 
   const specificError = (data) => {
     return data.errors && data.errors.length > 0
@@ -90,6 +101,10 @@ const SettingsPage = () => {
         },
       );
 
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
       const data = await response.json();
 
       if (!response.ok) {
@@ -142,6 +157,10 @@ const SettingsPage = () => {
         },
       );
 
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
       const data = await response.json();
       if (!response.ok) {
         throw new Error(
@@ -186,6 +205,10 @@ const SettingsPage = () => {
         },
       );
 
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
       const data = await response.json();
 
       if (!response.ok) {
@@ -203,6 +226,94 @@ const SettingsPage = () => {
     }
   };
 
+  const handleAiSubmit = async (e) => {
+    e.preventDefault();
+    if (!aiKey.trim()) return;
+
+    setIsAiLoading(true);
+    setAiMessage({ type: null, text: "" });
+
+    try {
+      const token = localStorage.getItem("token");
+
+      const payload = {
+        gemini_key: aiKey,
+      };
+
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/users/${user._id}/gemini-key`,
+        {
+          method: "PATCH",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(
+          specificError(data) || "Error while updating Gemini API key..",
+        );
+      }
+
+      updateUser({ ...user, hasGeminiKey: true });
+      setAiKey("");
+      setAiMessage({ type: "success", text: "API Key updated successfully!" });
+    } catch (err) {
+      setAiMessage({ type: "danger", text: err.message });
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
+
+  const handleAiDelete = async () => {
+    const isConfirmed = window.confirm(
+      "Are you sure you want to remove your Gemini API Key?",
+    );
+    if (!isConfirmed) return;
+
+    setIsAiLoading(true);
+    setAiMessage({ type: null, text: "" });
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/users/${user._id}/gemini-key`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(specificError(data) || "Error while deleting API key.");
+      }
+
+      updateUser({ ...user, hasGeminiKey: false });
+      setAiKey("");
+      setAiMessage({ type: "success", text: "API Key removed successfully!" });
+    } catch (err) {
+      setAiMessage({ type: "danger", text: err.message });
+    } finally {
+      setIsAiLoading(false);
+    }
+  };
   return (
     <BaseLayout>
       <Container className="py-5">
@@ -474,10 +585,59 @@ const SettingsPage = () => {
                   <h4 className="settings-section-title mb-2">
                     Gemini AI Configuration
                   </h4>
-                  <p className="settings-section-desc mb-0">
-                    Set your personal API Key to enable AI code generation.
+                  <p className="settings-section-desc mb-4">
+                    Set your personal API Key to enable AI features.
                   </p>
-                  <div className="coming-soon-badge mt-4">🚀 Coming in V2</div>
+
+                  <form
+                    onSubmit={handleAiSubmit}
+                    className="d-flex flex-column gap-3 max-w-md"
+                  >
+                    <div className="form-group">
+                      <label htmlFor="aiKey" className="settings-label">
+                        <KeyRound size={14} /> Gemini API Key
+                      </label>
+                      <input
+                        type="password"
+                        id="aiKey"
+                        className="settings-input"
+                        placeholder={
+                          user?.hasGeminiKey
+                            ? "••••••••••••"
+                            : "Enter your API Key"
+                        }
+                        value={aiKey}
+                        onChange={(e) => setAiKey(e.target.value)}
+                        aria-label="Gemini API Key"
+                      />
+                    </div>
+
+                    <div className="d-flex gap-2">
+                      <MyButton type="submit" disabled={isAiLoading}>
+                        {isAiLoading ? "Saving..." : "Save Key"}
+                      </MyButton>
+
+                      {user?.hasGeminiKey && (
+                        <MyButton
+                          type="button"
+                          className="d-flex align-items-center gap-2 btn-danger-custom"
+                          onClick={handleAiDelete}
+                          disabled={isAiLoading}
+                        >
+                          <Trash2 size={16} /> Remove Key
+                        </MyButton>
+                      )}
+                    </div>
+                  </form>
+
+                  {aiMessage.text && (
+                    <div className="mt-3">
+                      <CustomAlert
+                        text={aiMessage.text}
+                        type={aiMessage.type}
+                      />
+                    </div>
+                  )}
                 </Tab.Pane>
               </Tab.Content>
             </Col>
