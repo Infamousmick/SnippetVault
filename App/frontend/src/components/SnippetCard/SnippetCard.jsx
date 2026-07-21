@@ -27,6 +27,7 @@ import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import ReactMarkdown from "react-markdown";
 import CommentSection from "../CommentSection/CommentSection";
 import GeminiChatBox from "../GeminiChatBox/GeminiChatBox";
+import CustomAlert from "../CustomAlert/CustomAlert";
 
 const countItems = (value) => {
   if (Array.isArray(value)) return value.length;
@@ -36,8 +37,12 @@ const countItems = (value) => {
 
 const SnippetCard = ({ snippet, onToggleStar }) => {
   const { user } = useContext(AuthContext);
-  const { handleDeleteSnippet, openModal, handleToggleStar } =
-    useContext(SnippetContext);
+  const {
+    handleDeleteSnippet,
+    openModal,
+    handleToggleStar,
+    handleForkSnippet,
+  } = useContext(SnippetContext);
   const [isCopied, setisCopied] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const data = snippet || {};
@@ -59,8 +64,26 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
   const isAiGenerated = data.is_ai_generated;
   const tags = Array.isArray(data.tags) ? data.tags : [];
   const starsCount = data.starsCount;
-  const forksCount = countItems(data.forks);
+  const forksCount = data.forksCount;
+  const hasForked = user && data.forks?.includes(user._id);
+  const [forkAlert, setForkAlert] = useState({ type: null, text: null });
 
+  const handleFork = async () => {
+    setForkAlert({ type: null, text: null });
+
+    try {
+      const newForkedSnippet = await handleForkSnippet(data._id);
+      if (newForkedSnippet) {
+        openModal(newForkedSnippet);
+      }
+    } catch (error) {
+      setForkAlert({
+        type: "danger",
+        text: error.message || "Failed to fork snippet.",
+      });
+      setTimeout(() => setForkAlert({ type: null, text: null }), 5000);
+    }
+  };
   const handleCopy = () => {
     navigator.clipboard.writeText(code);
     setisCopied(true);
@@ -128,6 +151,31 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
             )}
           </div>
         </div>
+        {data.forked_from && (
+          <div className="forked-from-notice mb-2">
+            <GitFork
+              size={14}
+              className="d-inline-block align-text-bottom me-1"
+            />
+            <span>
+              Forked from
+              <Link
+                to={`/profile/${data.forked_from.user_id?._id}`}
+                className="forked-from-link"
+              >
+                {data.forked_from.user_id?.username ?? "Unknown user"}
+              </Link>
+              {data.forked_from.title && (
+                <>
+                  <span className="mx-1">·</span>
+                  <span className="forked-from-title">
+                    {data.forked_from.title}
+                  </span>
+                </>
+              )}
+            </span>
+          </div>
+        )}
         <MyCardTitle>{title}</MyCardTitle>
         <div className="my-card-description markdown-content">
           <ReactMarkdown>{description}</ReactMarkdown>
@@ -171,6 +219,11 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
         </div>
       </MyCardContent>
 
+      {forkAlert.text && (
+        <div className="px-3 pb-2">
+          <CustomAlert type={forkAlert.type} text={forkAlert.text} />
+        </div>
+      )}
       <MyCardFooter className="gap-3 flex-wrap justify-content-between">
         <div className="d-flex gap-2 flex-wrap">
           <button
@@ -191,7 +244,18 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
             <MessageSquare size={16} className="stat-icon" />
             <span>{localCommentsCount}</span>
           </button>
-          <button className="stat-btn d-flex align-items-center gap-1">
+          <button
+            className={`stat-btn ${hasForked ? "active-fork" : ""} d-flex align-items-center gap-1`}
+            onClick={handleFork}
+            disabled={isMySnippet || hasForked}
+            title={
+              isMySnippet
+                ? "You cannot fork your own snippet"
+                : hasForked
+                  ? "Already forked"
+                  : "Fork this snippet"
+            }
+          >
             <GitFork size={16} className="stat-icon" />
             <span>{forksCount}</span>
           </button>

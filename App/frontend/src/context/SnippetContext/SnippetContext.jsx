@@ -12,7 +12,7 @@ import SnippetForm from "../../components/SnippetForm/SnippetForm";
 export const SnippetContext = createContext();
 
 export const SnippetProvider = ({ children }) => {
-  const { isLoggedIn, logoutUser } = useContext(AuthContext);
+  const { isLoggedIn, logoutUser, user } = useContext(AuthContext);
 
   const [snippets, setSnippets] = useState([]);
   const [error, setError] = useState(null);
@@ -226,6 +226,46 @@ export const SnippetProvider = ({ children }) => {
     }
   };
 
+  const handleForkSnippet = async (snippetId) => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}/fork`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to fork snippet.");
+      }
+
+      setSnippets((prevSnippets) =>
+        prevSnippets.map((snippet) =>
+          snippet._id === snippetId
+            ? {
+                ...snippet,
+                forksCount: (snippet.forksCount || 0) + 1,
+                forks: [...(snippet.forks || []), user._id],
+              }
+            : snippet,
+        ),
+      );
+
+      return data.forkedSnippet;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const value = {
     snippets,
     error,
@@ -253,6 +293,7 @@ export const SnippetProvider = ({ children }) => {
     setIsStarredOnly,
     isAiOnly,
     setIsAiOnly,
+    handleForkSnippet,
   };
 
   return (
