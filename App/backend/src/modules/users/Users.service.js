@@ -87,7 +87,24 @@ const deleteUser = async (userId, loggedUserId) => {
     throw new UserNotFoundException();
   }
 
+  await snippetsSchema.updateMany(
+    { forks: userId },
+    { 
+      $pull: { forks: userId },
+      $inc: { forksCount: -1 } 
+    }
+  );
+
+  await snippetsSchema.updateMany(
+    { stars: userId },
+    { 
+      $pull: { stars: userId },
+      $inc: { starsCount: -1 } 
+    }
+  );
+
   await snippetsSchema.deleteMany({ user_id: userId });
+
   return sanitizeUser(user);
 };
 
