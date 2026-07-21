@@ -137,6 +137,19 @@ const toggleStar = async (req, res, next) => {
     next(e);
   }
 };
+
+const forkSnippet = async (req, res, next) => {
+  try {
+    const {postId} = req.params
+    const userId = req.user._id
+
+    const forkedSnippet = await snippetsService.forkSnippet(postId, userId)
+
+    res.status(201).json({statusCode: 201, message: "Snippet forked successfully", forkedSnippet})
+  } catch (e) {
+    next(e);
+  }
+};
 module.exports = {
   newSnippet,
   getSingleSnippet,
@@ -145,4 +158,5 @@ module.exports = {
   editSnippet,
   deleteSnippet,
   toggleStar,
+  forkSnippet,
 };

@@ -17,6 +17,7 @@ snippets.post(
   validate,
   snippetsController.newSnippet,
 );
+snippets.post("/:postId/fork", snippetsController.forkSnippet);
 snippets.patch(
   "/:postId",
   editValidationRules,

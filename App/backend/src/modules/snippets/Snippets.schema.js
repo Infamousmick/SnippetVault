@@ -48,6 +48,13 @@ const SnippetSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    forked_from: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Snippets",
+      default: null,
+    },
+    forks: [{ type: mongoose.Schema.Types.ObjectId, ref: "Users" }],
+    forksCount: { type: Number, default: 0 },
   },
   { timestamps: true, strict: true },
 );

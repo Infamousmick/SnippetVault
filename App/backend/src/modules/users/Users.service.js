@@ -49,7 +49,12 @@ const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
   const userSnippets = await snippetsSchema
     .find({ user_id: userId, ...query })
     .limit(pageSizeNum)
-    .skip((pageNum - 1) * pageSizeNum);
+    .skip((pageNum - 1) * pageSizeNum)
+    .populate({
+      path: "forked_from",
+      select: "title user_id",
+      populate: { path: "user_id", select: "username avatar_url" },
+    });
   return {
     ...sanitizeUser(user),
     snippets: userSnippets,

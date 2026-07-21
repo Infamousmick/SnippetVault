@@ -54,7 +54,12 @@ const getAllSnippets = async (
     .limit(pageSizeNum)
     .skip((pageNum - 1) * pageSizeNum)
     .sort(sortQuery)
-    .populate("user_id", "username avatar_url");
+    .populate("user_id", "username avatar_url")
+    .populate({
+      path: "forked_from",
+      select: "title user_id",
+      populate: { path: "user_id", select: "username avatar_url" },
+    });
 
   return { allSnippets, totalSnippets, totalPages };
 };
@@ -66,7 +71,12 @@ const newSnippet = async (body) => {
 const getSingleSnippet = async (postId) => {
   const snippet = await snippetsSchema
     .findById(postId)
-    .populate("user_id", "username avatar_url");
+    .populate("user_id", "username avatar_url")
+    .populate({
+      path: "forked_from",
+      select: "title user_id",
+      populate: { path: "user_id", select: "username avatar_url" },
+    });
 
   if (!snippet) {
     throw new SnippetNotFoundException("Snippet not found", 404);
@@ -77,7 +87,12 @@ const getSingleSnippet = async (postId) => {
 const getMySnippets = async (userId) => {
   return await snippetsSchema
     .find({ user_id: userId })
-    .populate("user_id", "username avatar_url");
+    .populate("user_id", "username avatar_url")
+    .populate({
+      path: "forked_from",
+      select: "title user_id",
+      populate: { path: "user_id", select: "username avatar_url" },
+    });
 };
 
 const editSnippet = async (postId, body, userId) => {
@@ -88,9 +103,20 @@ const editSnippet = async (postId, body, userId) => {
 };
 
 const deleteSnippet = async (postId, userId) => {
-  await findCorrespondence(postId, userId);
+  const snippetToDelete = await findCorrespondence(postId, userId);
 
-  return await snippetsSchema.findByIdAndDelete(postId);
+  const deletedSnippet = await snippetsSchema.findByIdAndDelete(postId);
+
+  if (snippetToDelete.forked_from) {
+    await snippetsSchema.updateOne(
+      { _id: snippetToDelete.forked_from },
+      {
+        $pull: { forks: userId },
+        $inc: { forksCount: -1 },
+      },
+    );
+  }
+  return deletedSnippet;
 };
 
 const toggleStar = async (postId, userId) => {
@@ -132,6 +158,45 @@ const toggleStar = async (postId, userId) => {
   return { isStarred, starsCount };
 };
 
+const forkSnippet = async (postId, userId) => {
+  const original = await snippetsSchema.findById(postId);
+
+  if (!original) {
+    throw new SnippetNotFoundException();
+  }
+
+  if (original.user_id.toString() === userId.toString()) {
+    throw new HttpException("You cannot fork your own snippet", 400);
+  }
+
+  const alreadyForked = await snippetsSchema.exists({
+    forked_from: postId,
+    user_id: userId,
+  });
+
+  if (alreadyForked) {
+    throw new HttpException("You have already forked this snippet", 400);
+  }
+
+  const forkedSnippet = await new snippetsSchema({
+    title: original.title,
+    description: original.description,
+    code_content: original.code_content,
+    language: original.language,
+    tags: original.tags,
+    is_ai_generated: original.is_ai_generated,
+    user_id: userId,
+    forked_from: original._id,
+  }).save();
+
+  await snippetsSchema.updateOne(
+    { _id: postId },
+    { $addToSet: { forks: userId }, $inc: { forksCount: 1 } },
+  );
+
+  return forkedSnippet;
+};
+
 module.exports = {
   newSnippet,
   getSingleSnippet,
@@ -140,4 +205,5 @@ module.exports = {
   editSnippet,
   deleteSnippet,
   toggleStar,
+  forkSnippet,
 };
