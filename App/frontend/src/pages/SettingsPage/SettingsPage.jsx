@@ -45,12 +45,56 @@ const SettingsPage = () => {
   const [aiKey, setAiKey] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [aiMessage, setAiMessage] = useState({ type: null, text: "" });
+  const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
+  const [isDeleteLoading, setIsDeleteLoading] = useState(false);
+  const [deleteMessage, setDeleteMessage] = useState({ type: null, text: "" });
 
   const specificError = (data) => {
     return data.errors && data.errors.length > 0
       ? data.errors[0].message
       : data.message;
   };
+
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault();
+    if (deleteConfirmInput !== user?.username) return;
+
+    setIsDeleteLoading(true);
+    setDeleteMessage({ type: null, text: "" });
+
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch(
+        `${import.meta.env.VITE_APP_SERVERURL}/users/${user._id}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (response.status === 401) {
+        logoutUser();
+        return;
+      }
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(
+          specificError(data) || "Error while deleting your account.",
+        );
+      }
+
+      setDeleteMessage({ type: "success", text: data.message });
+
+      setTimeout(() => logoutUser(), 3000);
+    } catch (error) {
+      setDeleteMessage({ type: "danger", text: error.message });
+    } finally {
+      setIsDeleteLoading(false);
+    }
+  };
+
   const handlePasswordChange = (e) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({ ...prev, [name]: value }));
@@ -578,6 +622,62 @@ const SettingsPage = () => {
                         </MyButton>
                       </div>
                     </form>
+                  </div>
+
+                  <hr className="my-5 settings-divider" />
+
+                  <div className="danger-zone-box">
+                    <div className="d-flex align-items-start gap-3 mb-3">
+                      <div className="danger-icon-wrapper flex-shrink-0">
+                        <ShieldAlert size={22} />
+                      </div>
+                      <div>
+                        <h5 className="danger-zone-title mb-1">
+                          Delete Account
+                        </h5>
+                        <p className="danger-zone-desc mb-0">
+                          This action is permanent and cannot be undone. All
+                          your snippets, comments, and stars will be permanently
+                          deleted. Snippets forked from your posts will remain,
+                          but will lose their reference to you as the original
+                          author.
+                        </p>
+                      </div>
+                    </div>
+
+                    <form
+                      onSubmit={handleDeleteAccount}
+                      className="d-flex flex-column flex-md-row gap-2 align-items-stretch align-items-md-center"
+                    >
+                      <input
+                        type="text"
+                        className="settings-input danger-zone-input"
+                        placeholder={`Type "${user?.username}" to confirm`}
+                        value={deleteConfirmInput}
+                        onChange={(e) => setDeleteConfirmInput(e.target.value)}
+                        aria-label="Type your username to confirm account deletion"
+                      />
+                      <MyButton
+                        type="submit"
+                        className="btn-danger-custom d-flex align-items-center justify-content-center gap-2 flex-shrink-0"
+                        disabled={
+                          isDeleteLoading ||
+                          deleteConfirmInput !== user?.username
+                        }
+                      >
+                        <Trash2 size={16} />
+                        {isDeleteLoading ? "Deleting..." : "Delete My Account"}
+                      </MyButton>
+                    </form>
+
+                    {deleteMessage.text && (
+                      <div className="mt-3">
+                        <CustomAlert
+                          text={deleteMessage.text}
+                          type={deleteMessage.type}
+                        />
+                      </div>
+                    )}
                   </div>
                 </Tab.Pane>
 

@@ -141,7 +141,53 @@
     color: var(--accent-danger) !important;
 }
 
+.btn-danger-custom:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    background-color: transparent !important;
+    color: var(--accent-danger) !important;
+}
+
 .btn-danger-custom:hover {
     background-color: var(--accent-danger) !important;
     color: white !important;
+}
+
+.danger-zone-box {
+    background-color: rgba(234, 60, 63, 0.05);
+    border: 1px solid var(--accent-danger);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+}
+
+.danger-icon-wrapper {
+    color: var(--accent-danger);
+    background-color: rgba(234, 60, 63, 0.1);
+    padding: 0.6rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.danger-zone-title {
+    color: var(--accent-danger);
+    font-weight: 700;
+    font-size: 1rem;
+}
+
+.danger-zone-desc {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    line-height: 1.5;
+}
+
+.danger-zone-input {
+    border-color: var(--accent-danger) !important;
+}
+
+.danger-zone-input:focus {
+    box-shadow: 0 0 0 2px rgba(234, 60, 63, 0.15) !important;
+    border-color: var(--accent-danger) !important;
 }
