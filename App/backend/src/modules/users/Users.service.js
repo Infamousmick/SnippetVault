@@ -22,7 +22,16 @@ const extractPublicIdFromUrl = (url) => {
   return pathWithoutVersion.substring(0, lastDotIndex);
 };
 
-const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
+const getUser = async (
+  userId,
+  sortQuery,
+  pageNum,
+  pageSizeNum,
+  queryStr,
+  starred,
+  ai,
+  loggedUserId,
+) => {
   const safeQueryStr = queryStr ? queryStr.replaceAll("#", "").trim() : "";
   const query = safeQueryStr
     ? {
@@ -41,6 +50,14 @@ const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
     throw new UserNotFoundException();
   }
 
+  if (starred === "true") {
+    query.stars = loggedUserId;
+  }
+
+  if (ai === "true") {
+    query.is_ai_generated = true;
+  }
+
   const totalSnippets = await snippetsSchema.countDocuments({
     user_id: userId,
     ...query,
@@ -50,6 +67,7 @@ const getUser = async (userId, pageNum, pageSizeNum, queryStr) => {
     .find({ user_id: userId, ...query })
     .limit(pageSizeNum)
     .skip((pageNum - 1) * pageSizeNum)
+    .sort(sortQuery)
     .populate({
       path: "forked_from",
       select: "title user_id",
