@@ -4,10 +4,12 @@ import {
   useEffect,
   useCallback,
   useContext,
+  useRef,
 } from "react";
 import { Modal } from "react-bootstrap";
 import { AuthContext } from "../AuthContext/AuthContext";
 import SnippetForm from "../../components/SnippetForm/SnippetForm";
+import { mergeSnippetUpdate } from "../../utils/mergeSnippetUpdate";
 
 export const SnippetContext = createContext();
 
@@ -27,6 +29,7 @@ export const SnippetProvider = ({ children }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isStarredOnly, setIsStarredOnly] = useState(false);
   const [isAiOnly, setIsAiOnly] = useState(false);
+  const modalSuccessCallbackRef = useRef(null);
 
   useEffect(() => {
     const debounceTimeout = setTimeout(() => {
@@ -138,9 +141,25 @@ export const SnippetProvider = ({ children }) => {
       }
 
       if (!response.ok) throw new Error("Failed to edit snippet.");
+
+      const data = await response.json();
+      const updatedSnippet = data.editedSnippet;
+
+      setSnippets((prevSnippets) =>
+        prevSnippets.map((s) =>
+          s._id === updatedSnippet._id
+            ? mergeSnippetUpdate(s, updatedSnippet)
+            : s,
+        ),
+      );
+
       setShowModal(false);
       setEditingSnippet(null);
-      await fetchSnippets();
+
+      if (modalSuccessCallbackRef.current) {
+        modalSuccessCallbackRef.current(updatedSnippet);
+        modalSuccessCallbackRef.current = null;
+      }
     } catch (error) {
       console.warn(error);
       alert(error.message || "Something went wrong while editing...");
@@ -156,15 +175,13 @@ export const SnippetProvider = ({ children }) => {
         `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}`,
         {
           method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         },
       );
 
       if (response.status === 401) {
         logoutUser();
-        return;
+        return false;
       }
 
       if (!response.ok) {
@@ -175,9 +192,11 @@ export const SnippetProvider = ({ children }) => {
       setSnippets((prevSnippets) =>
         prevSnippets.filter((snippet) => snippet._id !== snippetId),
       );
+      return true;
     } catch (error) {
       console.error(error);
       alert(error.message || "Something went wrong while deleting...");
+      return false;
     }
   };
 
@@ -271,9 +290,10 @@ export const SnippetProvider = ({ children }) => {
     error,
     activeFilter,
     setActiveFilter,
-    openModal: (snippetData = null) => {
+    openModal: (snippetData = null, onSuccess = null) => {
       setEditingSnippet(snippetData);
       setShowModal(true);
+      modalSuccessCallbackRef.current = onSuccess;
     },
     closeModal: () => {
       setShowModal(false);

@@ -35,7 +35,12 @@ const countItems = (value) => {
   return 0;
 };
 
-const SnippetCard = ({ snippet, onToggleStar }) => {
+const SnippetCard = ({
+  snippet,
+  onToggleStar,
+  onDeleteSuccess,
+  onEditSuccess,
+}) => {
   const { user } = useContext(AuthContext);
   const {
     handleDeleteSnippet,
@@ -91,13 +96,16 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
   };
 
   const handleEdit = () => {
-    openModal(data);
+    openModal(data, onEditSuccess);
   };
-  const handleDelete = () => {
-    const isConfirmed = window.confirm("Are you sure to delete this snippet?");
 
-    if (isConfirmed) {
-      handleDeleteSnippet(data._id);
+  const handleDelete = async () => {
+    const isConfirmed = window.confirm("Are you sure to delete this snippet?");
+    if (!isConfirmed) return;
+
+    const success = await handleDeleteSnippet(data._id);
+    if (success && onDeleteSuccess) {
+      onDeleteSuccess(data._id);
     }
   };
 
@@ -158,7 +166,7 @@ const SnippetCard = ({ snippet, onToggleStar }) => {
               className="d-inline-block align-text-bottom me-1"
             />
             <span>
-              Forked from
+              Forked from{" "}
               <Link
                 to={`/profile/${data.forked_from.user_id?._id}`}
                 className="forked-from-link"

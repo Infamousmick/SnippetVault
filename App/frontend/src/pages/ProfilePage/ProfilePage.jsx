@@ -10,6 +10,7 @@ import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import PaginationControls from "../../components/PaginationControls/PaginationControls";
+import { mergeSnippetUpdate } from "../../utils/mergeSnippetUpdate";
 import "./ProfilePage.css";
 
 const ProfilePage = () => {
@@ -190,6 +191,20 @@ const ProfilePage = () => {
                           key={snippet._id}
                           snippet={snippetWithUserData}
                           onToggleStar={handleProfileStarToggle}
+                          onDeleteSuccess={(deletedId) =>
+                            setSnippets((prev) =>
+                              prev.filter((s) => s._id !== deletedId),
+                            )
+                          }
+                          onEditSuccess={(updatedSnippet) =>
+                            setSnippets((prev) =>
+                              prev.map((s) =>
+                                s._id === updatedSnippet._id
+                                  ? mergeSnippetUpdate(s, updatedSnippet)
+                                  : s,
+                              ),
+                            )
+                          }
                         />
                       );
                     })
