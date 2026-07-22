@@ -1,4 +1,4 @@
-import { useContext, useState, useEffect, useCallback } from "react";
+import { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import { Link } from "react-router-dom";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
@@ -11,10 +11,10 @@ import {
   Star,
   Sparkles,
 } from "lucide-react";
-import SnippetForm from "../../components/SnippetForm/SnippetForm";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
 import EmptyState from "../../components/EmptyState/EmptyState";
+import FilterBar from "../../components/FilterBar/FilterBar";
 import {
   MyCard,
   MyCardHeader,
@@ -55,6 +55,38 @@ const HomePage = () => {
     isAiOnly,
     setIsAiOnly,
   } = useContext(SnippetContext);
+
+  const filterToggles = isLoggedIn
+    ? [
+        {
+          key: "starred",
+          label: "Starred",
+          icon: Star,
+          active: isStarredOnly,
+          className: "btn-starred",
+          onClick: () => {
+            setIsStarredOnly(!isStarredOnly);
+            setPage(1);
+          },
+        },
+        {
+          key: "ai",
+          label: "Ai",
+          icon: Sparkles,
+          active: isAiOnly,
+          className: "btn-ai",
+          onClick: () => {
+            setIsAiOnly(!isAiOnly);
+            setPage(1);
+          },
+        },
+      ]
+    : [];
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+    setPage(1);
+  };
 
   const renderFeedContent = () => {
     if (!isLoggedIn) {
@@ -148,57 +180,12 @@ const HomePage = () => {
                 )}
               </div>
 
-              <div className="filters-container">
-                {filters.map((filter) => {
-                  const isActive = activeFilter === filter;
-                  return (
-                    <button
-                      key={filter}
-                      type="button"
-                      className={`filter-pill ${isActive ? "active" : ""}`}
-                      onClick={() => {
-                        setActiveFilter(filter);
-                        setPage(1);
-                      }}
-                    >
-                      {filter}
-                    </button>
-                  );
-                })}
-
-                {isLoggedIn && (
-                  <div className="ms-auto d-flex align-items-center gap-2">
-                    <button
-                      type="button"
-                      className={`btn-toggle btn-starred d-flex align-items-center gap-2 ${isStarredOnly ? "active" : ""}`}
-                      onClick={() => {
-                        setIsStarredOnly(!isStarredOnly);
-                        setPage(1);
-                      }}
-                    >
-                      <Star
-                        size={16}
-                        className={isStarredOnly ? "fill-current" : ""}
-                      />
-                      Starred
-                    </button>
-                    <button
-                      type="button"
-                      className={`btn-toggle btn-ai d-flex align-items-center gap-2 ${isAiOnly ? "active" : ""}`}
-                      onClick={() => {
-                        setIsAiOnly(!isAiOnly);
-                        setPage(1);
-                      }}
-                    >
-                      <Sparkles
-                        size={16}
-                        className={isAiOnly ? "fill-current" : ""}
-                      />
-                      Ai
-                    </button>
-                  </div>
-                )}
-              </div>
+              <FilterBar
+                filters={filters}
+                activeFilter={activeFilter}
+                onFilterChange={handleFilterChange}
+                toggles={filterToggles}
+              />
 
               {renderFeedContent()}
             </div>
