@@ -25,7 +25,7 @@ const NotFoundPage = () => {
               </p>
 
               <Link to="/" className="text-decoration-none">
-                <MyButton className="d-inline-flex align-items-center gap-2 px-4 py-2">
+                <MyButton className="d-inline-flex px-4 py-2">
                   <Home size={18} />
                   Return to the dashboard
                 </MyButton>

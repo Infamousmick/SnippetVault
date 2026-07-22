@@ -594,7 +594,7 @@ const SettingsPage = () => {
                       <div className="form-group">
                         <label
                           htmlFor="avatarUpload"
-                          className="settings-input settings-file-upload-label d-flex align-items-center justify-content-center text-secondary m-0"
+                          className="settings-input settings-file-upload-label d-flex align-items-center justify-content-center"
                         >
                           {avatarFile
                             ? avatarFile.name
@@ -665,7 +665,7 @@ const SettingsPage = () => {
                       />
                       <MyButton
                         type="submit"
-                        className="btn-danger-custom d-flex align-items-center justify-content-center gap-2 flex-shrink-0"
+                        className="btn-danger-custom flex-shrink-0"
                         disabled={
                           isDeleteLoading ||
                           deleteConfirmInput !== user?.username
@@ -726,7 +726,7 @@ const SettingsPage = () => {
                       {user?.hasGeminiKey && (
                         <MyButton
                           type="button"
-                          className="d-flex align-items-center gap-2 btn-danger-custom"
+                          className="btn-danger-custom"
                           onClick={handleAiDelete}
                           disabled={isAiLoading}
                         >
