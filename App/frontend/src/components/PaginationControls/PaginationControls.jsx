@@ -12,7 +12,7 @@ const PaginationControls = ( {page, totalPages, setPage}) => {
   };
 
   return (
-    <div className="d-flex justify-content-between align-items-center mt-4">
+    <div className="d-flex align-items-center justify-content-between mt-4">
       <MyButton
         onClick={handlePrevPage}
         disabled={page === 1} 

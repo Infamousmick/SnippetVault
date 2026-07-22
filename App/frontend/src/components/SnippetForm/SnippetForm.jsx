@@ -310,7 +310,7 @@ const SnippetForm = ({
           </div>
 
           <div className="form-group">
-            <div className="d-flex justify-content-between align-items-center mb-1">
+            <div className="d-flex align-items-center justify-content-between mb-1">
               <label htmlFor="description" className="form-label mb-0">
                 <FileText size={14} /> Description
               </label>
@@ -380,7 +380,7 @@ const SnippetForm = ({
           </div>
 
           <div className="form-group">
-            <div className="d-flex justify-content-between flex-wrap align-items-center mb-1 gap-2">
+            <div className="d-flex flex-wrap align-items-center justify-content-between mb-1 gap-2">
               <label htmlFor="code" className="form-label mb-0">
                 <Code2 size={14} /> Code Snippet
               </label>

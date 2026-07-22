@@ -90,7 +90,7 @@ const GeminiChatBox = ({ snippetId, onClose }) => {
 
   return (
     <div className="gemini-chatbox">
-      <div className="gemini-chatbox-header d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div className="gemini-chatbox-header d-flex flex-wrap align-items-center justify-content-between gap-2">
         <div className="d-flex align-items-center gap-2">
           <Sparkles size={16} className="gemini-chatbox-icon" />
           <span className="gemini-chatbox-title">

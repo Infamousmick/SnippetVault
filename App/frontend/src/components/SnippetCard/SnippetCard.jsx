@@ -192,7 +192,7 @@ const SnippetCard = ({
 
       <MyCardContent>
         <div className="code-block-wrapper mb-3">
-          <div className="code-block-header d-flex justify-content-between align-items-center px-3 py-2">
+          <div className="code-block-header d-flex align-items-center justify-content-between px-3 py-2">
             <div className="d-flex gap-2">
               <span className="mac-dot mac-red"></span>
               <span className="mac-dot mac-yellow"></span>
