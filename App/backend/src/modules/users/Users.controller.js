@@ -4,14 +4,26 @@ const { encryptData } = require("../../utils/encryption");
 const getUser = async (req, res, next) => {
   try {
     const { userId } = req.params;
-    const { page, pageSize, queryStr } = req.query;
+    const { page, pageSize, queryStr, sort, starred, ai } = req.query;
+    let sortQuery;
+    if (sort === "Most Forked") {
+      sortQuery = { forks: -1, createdAt: -1 };
+    } else if (sort === "Newest") {
+      sortQuery = { createdAt: -1 };
+    } else {
+      sortQuery = { starsCount: -1, createdAt: -1 };
+    }
     const pageNum = parseInt(page, 10) || 1;
     const pageSizeNum = parseInt(pageSize, 10) || 5;
     const user = await usersService.getUser(
       userId,
+      sortQuery,
       pageNum,
       pageSizeNum,
       queryStr,
+      starred,
+      ai,
+      req.user._id,
     );
 
     res.status(200).json({ statusCode: 200, user });
