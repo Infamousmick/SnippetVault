@@ -1,21 +1,7 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseLayout from "../../Layout/BaseLayout";
-import {
-  MyCard,
-  MyCardHeader,
-  MyCardTitle,
-  MyCardDescription,
-  MyCardContent,
-  MyCardFooter,
-} from "../../components/MyCard/MyCard";
-import MyButton from "../../components/MyButton/MyButton";
-import "./Register.css";
-import { Container } from "react-bootstrap";
-
-import CustomAlert from "../../components/CustomAlert/CustomAlert";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
+import AuthForm, { AuthInput } from "../../components/AuthForm/AuthForm";
 import { Mail, KeyRound, AtSign } from "lucide-react";
 
 const Register = () => {
@@ -26,15 +12,6 @@ const Register = () => {
   });
   const [err, setErr] = useState(null);
   const [isRegistered, setIsRegistered] = useState(false);
-
-  const oauths = [
-    { id: 0, name: "github", icon: FaGithub, label: "Continue with GitHub" },
-    { id: 1, name: "google", icon: FcGoogle, label: "Continue with Google" },
-  ];
-
-  const handleOAuthLogin = (provider) => {
-    window.location.href = `${import.meta.env.VITE_APP_SERVERURL}/oauth/${provider}`;
-  };
 
   const navigate = useNavigate();
 
@@ -97,107 +74,51 @@ const Register = () => {
 
   return (
     <BaseLayout>
-      <div className="auth-page-wrapper d-flex align-items-center justify-content-center min-vh-100">
-        <Container className="d-flex justify-content-center">
-          <MyCard className="auth-card">
-            <MyCardHeader className="text-center pb-0">
-              <MyCardTitle>
-                Welcome to Snippet<span className="vault">Vault</span>
-              </MyCardTitle>
-              <MyCardDescription>
-                Accedi al tuo account SnippetVault
-              </MyCardDescription>
-            </MyCardHeader>
+      <AuthForm
+        title={
+          <>
+            Welcome to Snippet<span className="vault">Vault</span>
+          </>
+        }
+        description="Accedi al tuo account SnippetVault"
+        error={err}
+        successMessage={isRegistered ? "Registered successfully!" : null}
+        onSubmit={handleSubmit}
+        submitLabel="Register"
+        footerText="Have an account?"
+        footerLinkTo="/login"
+        footerLinkLabel="Log in"
+      >
+        <AuthInput
+          icon={Mail}
+          type="email"
+          name="email"
+          placeholder="snippetvault@gmail.com"
+          value={formData.email}
+          onChange={handleChange}
+          required
+        />
 
-            <MyCardContent className="pt-4">
-              <div className="d-flex flex-column gap-2 mb-4">
-                {oauths.map((oauth) => {
-                  const Icon = oauth.icon;
-                  return (
-                    <button
-                      key={oauth.id}
-                      className="oauth-btn"
-                      onClick={() => handleOAuthLogin(oauth.name)}
-                    >
-                      <Icon size={18} /> {oauth.label}
-                    </button>
-                  );
-                })}
-              </div>
+        <AuthInput
+          icon={AtSign}
+          type="text"
+          name="username"
+          placeholder="username"
+          value={formData.username}
+          onChange={handleChange}
+          required
+        />
 
-              <div className="auth-divider">
-                <span>or continue with your email</span>
-              </div>
-
-              {err && (
-                <div className="mb-2">
-                  <CustomAlert text={err} type="danger" />
-                </div>
-              )}
-              {isRegistered && (
-                <div className="mb-2">
-                  <CustomAlert text="Registered successfully!" type="success" />
-                </div>
-              )}
-
-              <form
-                onSubmit={handleSubmit}
-                className="d-flex flex-column gap-3"
-              >
-                <div className="position-relative">
-                  <Mail size={18} className="auth-input-icon" />
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="snippetvault@gmail.com"
-                    className="auth-input w-100"
-                    value={formData.email}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="position-relative">
-                  <AtSign size={18} className="auth-input-icon" />
-                  <input
-                    type="text"
-                    name="username"
-                    placeholder="username"
-                    className="auth-input w-100"
-                    value={formData.username}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="position-relative">
-                  <KeyRound size={18} className="auth-input-icon" />
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="*********"
-                    className="auth-input w-100"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <MyButton type="submit" className="w-100 mt-2">
-                  Register
-                </MyButton>
-              </form>
-            </MyCardContent>
-
-            <MyCardFooter className="justify-content-center gap-1">
-              <span className="auth-footer-text">Have an account?</span>
-              <Link to="/login" className="auth-link">
-                Log in
-              </Link>
-            </MyCardFooter>
-          </MyCard>
-        </Container>
-      </div>
+        <AuthInput
+          icon={KeyRound}
+          type="password"
+          name="password"
+          placeholder="*********"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+      </AuthForm>
     </BaseLayout>
   );
 };

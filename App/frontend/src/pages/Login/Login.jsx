@@ -1,22 +1,8 @@
 import { useState, useEffect, useContext } from "react";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import BaseLayout from "../../Layout/BaseLayout";
-import {
-  MyCard,
-  MyCardHeader,
-  MyCardTitle,
-  MyCardDescription,
-  MyCardContent,
-  MyCardFooter,
-} from "../../components/MyCard/MyCard";
-import MyButton from "../../components/MyButton/MyButton";
-import "./Login.css";
-import { Container } from "react-bootstrap";
-
-import CustomAlert from "../../components/CustomAlert/CustomAlert";
-import { FaGithub } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
+import AuthForm, { AuthInput } from "../../components/AuthForm/AuthForm";
 import { Mail, KeyRound } from "lucide-react";
 
 const Login = () => {
@@ -26,15 +12,6 @@ const Login = () => {
     password: "",
   });
   const [err, setErr] = useState(null);
-
-  const oauths = [
-    { id: 0, name: "github", icon: FaGithub, label: "Continue with GitHub" },
-    { id: 1, name: "google", icon: FcGoogle, label: "Continue with Google" },
-  ];
-
-  const handleOAuthLogin = (provider) => {
-    window.location.href = `${import.meta.env.VITE_APP_SERVERURL}/oauth/${provider}`;
-  };
 
   const navigate = useNavigate();
 
@@ -99,92 +76,37 @@ const Login = () => {
 
   return (
     <BaseLayout>
-      <div className="auth-page-wrapper d-flex align-items-center justify-content-center min-vh-100">
-        <Container className="d-flex justify-content-center">
-          <MyCard className="auth-card">
-            <MyCardHeader className="text-center pb-0">
-              <MyCardTitle>Welcome back</MyCardTitle>
-              <MyCardDescription>
-                Login to your SnippetVault's account
-              </MyCardDescription>
-            </MyCardHeader>
+      <AuthForm
+        title="Welcome back"
+        description="Login to your SnippetVault's account"
+        error={err}
+        successMessage={isLoggedIn ? "Login successfully!" : null}
+        onSubmit={handleSubmit}
+        submitLabel="Log in"
+        footerText="Don't have an account?"
+        footerLinkTo="/register"
+        footerLinkLabel="Register"
+      >
+        <AuthInput
+          icon={Mail}
+          type="text"
+          name="identifier"
+          placeholder="email or username"
+          value={formData.identifier}
+          onChange={handleChange}
+          required
+        />
 
-            <MyCardContent className="pt-4">
-              <div className="d-flex flex-column gap-2 mb-4">
-                {oauths.map((oauth) => {
-                  const Icon = oauth.icon;
-                  return (
-                    <button
-                      key={oauth.id}
-                      className="oauth-btn"
-                      onClick={() => handleOAuthLogin(oauth.name)}
-                    >
-                      <Icon size={18} /> {oauth.label}
-                    </button>
-                  );
-                })}
-              </div>
-
-              <div className="auth-divider">
-                <span>or continue with your email</span>
-              </div>
-
-              {err && (
-                <div className="mb-2">
-                  <CustomAlert text={err} type="danger" />
-                </div>
-              )}
-              {isLoggedIn && (
-                <div className="mb-2">
-                  <CustomAlert text="Login successfully!" type="success" />
-                </div>
-              )}
-
-              <form
-                onSubmit={handleSubmit}
-                className="d-flex flex-column gap-3"
-              >
-                <div className="position-relative">
-                  <Mail size={18} className="auth-input-icon" />
-                  <input
-                    type="text"
-                    name="identifier"
-                    placeholder="email or username"
-                    className="auth-input w-100"
-                    value={formData.identifier}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <div className="position-relative">
-                  <KeyRound size={18} className="auth-input-icon" />
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="*********"
-                    className="auth-input w-100"
-                    value={formData.password}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-
-                <MyButton type="submit" className="w-100 mt-2">
-                  Log in
-                </MyButton>
-              </form>
-            </MyCardContent>
-
-            <MyCardFooter className="justify-content-center gap-1">
-              <span className="auth-footer-text">Don't have an account?</span>
-              <Link to="/register" className="auth-link">
-                Register
-              </Link>
-            </MyCardFooter>
-          </MyCard>
-        </Container>
-      </div>
+        <AuthInput
+          icon={KeyRound}
+          type="password"
+          name="password"
+          placeholder="*********"
+          value={formData.password}
+          onChange={handleChange}
+          required
+        />
+      </AuthForm>
     </BaseLayout>
   );
 };
