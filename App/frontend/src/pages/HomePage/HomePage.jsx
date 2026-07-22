@@ -8,8 +8,6 @@ import {
   TrendingUp,
   Lock,
   AlertCircle,
-  Star,
-  Sparkles,
 } from "lucide-react";
 import BaseLayout from "../../Layout/BaseLayout";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
@@ -25,6 +23,10 @@ import MyButton from "../../components/MyButton/MyButton";
 import "./HomePage.css";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import PaginationControls from "../../components/PaginationControls/PaginationControls";
+import {
+  SNIPPET_FILTERS,
+  SNIPPET_FILTER_TOGGLES,
+} from "../../constants/filters";
 const trendingTags = [
   { tag: "react", count: "12.4k" },
   { tag: "typescript", count: "9.8k" },
@@ -33,8 +35,6 @@ const trendingTags = [
   { tag: "tailwind", count: "3.9k" },
   { tag: "rust", count: "2.2k" },
 ];
-
-const filters = ["Trending", "Newest", "Most Forked"];
 
 const HomePage = () => {
   const { isLoggedIn } = useContext(AuthContext);
@@ -57,30 +57,18 @@ const HomePage = () => {
   } = useContext(SnippetContext);
 
   const filterToggles = isLoggedIn
-    ? [
-        {
-          key: "starred",
-          label: "Starred",
-          icon: Star,
-          active: isStarredOnly,
-          className: "btn-starred",
-          onClick: () => {
+    ? SNIPPET_FILTER_TOGGLES.map((toggle) => ({
+        ...toggle,
+        active: toggle.key === "starred" ? isStarredOnly : isAiOnly,
+        onClick: () => {
+          if (toggle.key === "starred") {
             setIsStarredOnly(!isStarredOnly);
-            setPage(1);
-          },
-        },
-        {
-          key: "ai",
-          label: "Ai",
-          icon: Sparkles,
-          active: isAiOnly,
-          className: "btn-ai",
-          onClick: () => {
+          } else {
             setIsAiOnly(!isAiOnly);
-            setPage(1);
-          },
+          }
+          setPage(1);
         },
-      ]
+      }))
     : [];
 
   const handleFilterChange = (filter) => {
@@ -181,7 +169,7 @@ const HomePage = () => {
               </div>
 
               <FilterBar
-                filters={filters}
+                filters={SNIPPET_FILTERS}
                 activeFilter={activeFilter}
                 onFilterChange={handleFilterChange}
                 toggles={filterToggles}

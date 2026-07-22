@@ -24,9 +24,16 @@ const FilterBar = ({ filters, activeFilter, onFilterChange, toggles = [] }) => {
               <button
                 key={key}
                 type="button"
-                className={`btn-toggle ${className} d-flex align-items-center gap-2 ${
-                  active ? "active" : ""
-                }`}
+                className={[
+                  "btn-toggle",
+                  className,
+                  "d-flex",
+                  "align-items-center",
+                  "gap-2",
+                  active ? "active" : "",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
                 onClick={onClick}
               >
                 {Icon && (
