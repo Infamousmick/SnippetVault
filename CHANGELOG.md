@@ -1,6 +1,24 @@
 # Changelog
 
 All notable changes to the SnippetVault project will be documented in this file.
+## [1.7.0] - 2026-07-22
+
+### ✨ Features
+
+- **Snippet Forking System:** Integrated a complete forking UI with original author attribution, supported by backend nested database population for precise reference tracking.
+- **Secure Account Deletion:** Implemented a dedicated "Danger Zone" UI requiring explicit username confirmation, coupled with backend data cleanup to safely remove users without leaving orphaned data.
+- **Profile Snippet Filters:** Added a reusable frontend UI and robust backend support to allow dynamic filtering of user-specific snippets.
+
+### 🐛 Bug Fixes
+
+- **Real-Time Profile Sync:** Synchronized local snippet data with the global context upon creation, resolving the issue where new snippets failed to render without a hard page refresh.
+- **Optimized Feed State:** Updated edit and delete actions to modify local state directly instead of triggering a full feed refetch, significantly reducing unnecessary API calls and improving perceived performance.
+- **Alert State Standardization:** Unified the reset state for alert components to ensure consistent visual feedback across the application.
+
+### ♻️ Refactoring
+
+- **Component Decoupling:** Extracted the Filter Bar and Authentication Form into standalone, reusable components to adhere strictly to DRY principles.
+- **Bootstrap Utility Cleanup:** Normalized class usage and removed redundant Bootstrap utility classes, resulting in a cleaner and more maintainable DOM structure.
 
 ## [1.6.0] - 2026-07-20
 
