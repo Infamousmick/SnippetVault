@@ -21,7 +21,11 @@ import "./ProfilePage.css";
 const ProfilePage = () => {
   const { userId } = useParams();
   const { user, logoutUser } = useContext(AuthContext);
-  const { handleToggleStar, debouncedQuery } = useContext(SnippetContext);
+  const {
+    handleToggleStar,
+    debouncedQuery,
+    snippets: globalSnippets,
+  } = useContext(SnippetContext);
 
   const [snippets, setSnippets] = useState([]);
   const [profileUser, setProfileUser] = useState(null);
@@ -130,6 +134,7 @@ const ProfilePage = () => {
     activeFilter,
     isStarredOnly,
     isAiOnly,
+    globalSnippets,
   ]);
 
   return (
