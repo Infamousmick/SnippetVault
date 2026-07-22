@@ -6,11 +6,16 @@ import BaseLayout from "../../Layout/BaseLayout";
 import { MyCard, MyCardContent } from "../../components/MyCard/MyCard";
 import SnippetCard from "../../components/SnippetCard/SnippetCard";
 import EmptyState from "../../components/EmptyState/EmptyState";
+import FilterBar from "../../components/FilterBar/FilterBar";
 import { AuthContext } from "../../context/AuthContext/AuthContext";
 import CustomAlert from "../../components/CustomAlert/CustomAlert";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 import PaginationControls from "../../components/PaginationControls/PaginationControls";
 import { mergeSnippetUpdate } from "../../utils/mergeSnippetUpdate";
+import {
+  SNIPPET_FILTERS,
+  SNIPPET_FILTER_TOGGLES,
+} from "../../constants/filters";
 import "./ProfilePage.css";
 
 const ProfilePage = () => {
@@ -24,6 +29,9 @@ const ProfilePage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [alert, setAlert] = useState({ text: null, type: null });
+  const [activeFilter, setActiveFilter] = useState(SNIPPET_FILTERS[0]);
+  const [isStarredOnly, setIsStarredOnly] = useState(false);
+  const [isAiOnly, setIsAiOnly] = useState(false);
   const displayTitle = userId
     ? "No snippets found for this user."
     : "No snippet found in your profile";
@@ -34,7 +42,25 @@ const ProfilePage = () => {
 
   useEffect(() => {
     setPage(1);
-  }, [targetUserId, debouncedQuery]);
+  }, [targetUserId, debouncedQuery, activeFilter, isStarredOnly, isAiOnly]);
+
+  const filterToggles = SNIPPET_FILTER_TOGGLES.map((toggle) => ({
+    ...toggle,
+    active: toggle.key === "starred" ? isStarredOnly : isAiOnly,
+    onClick: () => {
+      if (toggle.key === "starred") {
+        setIsStarredOnly(!isStarredOnly);
+      } else {
+        setIsAiOnly(!isAiOnly);
+      }
+      setPage(1);
+    },
+  }));
+
+  const handleFilterChange = (filter) => {
+    setActiveFilter(filter);
+    setPage(1);
+  };
 
   const handleProfileStarToggle = async (snippetId, currentUserId) => {
     setSnippets((prevSnippets) =>
@@ -65,7 +91,7 @@ const ProfilePage = () => {
         const token = localStorage.getItem("token");
 
         const response = await fetch(
-          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}?page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}`,
+          `${import.meta.env.VITE_APP_SERVERURL}/users/${targetUserId}?sort=${activeFilter}&page=${page}&pageSize=5&queryStr=${encodeURIComponent(debouncedQuery)}&starred=${isStarredOnly}&ai=${isAiOnly}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -95,7 +121,16 @@ const ProfilePage = () => {
     if (targetUserId) {
       fetchProfileData();
     }
-  }, [targetUserId, user, logoutUser, page, debouncedQuery]);
+  }, [
+    targetUserId,
+    user,
+    logoutUser,
+    page,
+    debouncedQuery,
+    activeFilter,
+    isStarredOnly,
+    isAiOnly,
+  ]);
 
   return (
     <BaseLayout>
@@ -172,6 +207,15 @@ const ProfilePage = () => {
                     ? `${profileUser?.username}'s Snippets`
                     : "My Snippets"}
                 </h3>
+
+                <div className="mb-4">
+                  <FilterBar
+                    filters={SNIPPET_FILTERS}
+                    activeFilter={activeFilter}
+                    onFilterChange={handleFilterChange}
+                    toggles={filterToggles}
+                  />
+                </div>
 
                 <div className="d-flex flex-column gap-4">
                   {snippets.length === 0 ? (
