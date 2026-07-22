@@ -27,13 +27,16 @@ const SettingsPage = () => {
   const [username, setUsername] = useState(user?.username || "");
   const [passwordMessage, setPasswordMessage] = useState({
     type: null,
-    text: "",
+    text: null,
   });
   const [usernameMessage, setUsernameMessage] = useState({
     type: null,
-    text: "",
+    text: null,
   });
-  const [avatarMessage, setAvatarMessage] = useState({ type: null, text: "" });
+  const [avatarMessage, setAvatarMessage] = useState({
+    type: null,
+    text: null,
+  });
   const [isPasswordLoading, setIsPasswordLoading] = useState(false);
   const [isUsernameLoading, setIsUsernameLoading] = useState(false);
   const [isAvatarLoading, setIsAvatarLoading] = useState(false);
@@ -44,10 +47,13 @@ const SettingsPage = () => {
   });
   const [aiKey, setAiKey] = useState("");
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [aiMessage, setAiMessage] = useState({ type: null, text: "" });
+  const [aiMessage, setAiMessage] = useState({ type: null, text: null });
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
   const [isDeleteLoading, setIsDeleteLoading] = useState(false);
-  const [deleteMessage, setDeleteMessage] = useState({ type: null, text: "" });
+  const [deleteMessage, setDeleteMessage] = useState({
+    type: null,
+    text: null,
+  });
 
   const specificError = (data) => {
     return data.errors && data.errors.length > 0
@@ -60,7 +66,7 @@ const SettingsPage = () => {
     if (deleteConfirmInput !== user?.username) return;
 
     setIsDeleteLoading(true);
-    setDeleteMessage({ type: null, text: "" });
+    setDeleteMessage({ type: null, text: null });
 
     try {
       const token = localStorage.getItem("token");
@@ -102,7 +108,7 @@ const SettingsPage = () => {
 
   const handlePasswordSubmit = async (e) => {
     e.preventDefault();
-    setPasswordMessage({ type: null, text: "" });
+    setPasswordMessage({ type: null, text: null });
 
     if (passwordData.newPassword !== passwordData.confirmPassword) {
       setPasswordMessage({
@@ -173,7 +179,7 @@ const SettingsPage = () => {
 
   const handleUsernameSubmit = async (e) => {
     e.preventDefault();
-    setUsernameMessage({ type: null, text: "" });
+    setUsernameMessage({ type: null, text: null });
     setIsUsernameLoading(true);
 
     try {
@@ -230,7 +236,7 @@ const SettingsPage = () => {
     if (!avatarFile) return;
 
     setIsAvatarLoading(true);
-    setAvatarMessage({ type: null, text: "" });
+    setAvatarMessage({ type: null, text: null });
 
     try {
       const token = localStorage.getItem("token");
@@ -275,7 +281,7 @@ const SettingsPage = () => {
     if (!aiKey.trim()) return;
 
     setIsAiLoading(true);
-    setAiMessage({ type: null, text: "" });
+    setAiMessage({ type: null, text: null });
 
     try {
       const token = localStorage.getItem("token");
@@ -325,7 +331,7 @@ const SettingsPage = () => {
     if (!isConfirmed) return;
 
     setIsAiLoading(true);
-    setAiMessage({ type: null, text: "" });
+    setAiMessage({ type: null, text: null });
 
     try {
       const token = localStorage.getItem("token");

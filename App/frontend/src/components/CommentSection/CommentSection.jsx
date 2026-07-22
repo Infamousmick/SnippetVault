@@ -9,7 +9,7 @@ const CommentSection = ({ snippetId, onCountChange }) => {
   const { logoutUser, user } = useContext(AuthContext);
   const [comments, setComments] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [alert, setAlert] = useState({ text: null, type: "danger" });
+  const [alert, setAlert] = useState({ text: null, type: null });
 
   const getCommentUserId = (comment) => {
     return typeof comment.user_id === "object"
@@ -47,7 +47,7 @@ const CommentSection = ({ snippetId, onCountChange }) => {
 
   const handleCreateComment = async (body) => {
     try {
-      setAlert({ text: null, type: "danger" });
+      setAlert({ text: null, type: null });
       const token = localStorage.getItem("token");
       const response = await fetch(
         `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}/comments`,
@@ -89,7 +89,7 @@ const CommentSection = ({ snippetId, onCountChange }) => {
     if (!isConfirmed) return;
 
     try {
-      setAlert({ text: null, type: "danger" });
+      setAlert({ text: null, type: null });
       const token = localStorage.getItem("token");
       const response = await fetch(
         `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}/comments/${commentId}`,
@@ -122,7 +122,7 @@ const CommentSection = ({ snippetId, onCountChange }) => {
 
   const handleEditComment = async (commentId, newBody) => {
     try {
-      setAlert({ text: null, type: "danger" });
+      setAlert({ text: null, type: null });
       const token = localStorage.getItem("token");
       const response = await fetch(
         `${import.meta.env.VITE_APP_SERVERURL}/snippets/${snippetId}/comments/${commentId}`,
@@ -213,7 +213,7 @@ const CommentSection = ({ snippetId, onCountChange }) => {
           <CustomAlert
             text={alert.text}
             type={alert.type}
-            onClose={() => setAlert({ text: null, type: "danger" })}
+            onClose={() => setAlert({ text: null, type: null })}
           />
         </div>
       )}

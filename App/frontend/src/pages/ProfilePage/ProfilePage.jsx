@@ -23,7 +23,7 @@ const ProfilePage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [alert, setAlert] = useState({ text: null, type: "danger" });
+  const [alert, setAlert] = useState({ text: null, type: null });
   const displayTitle = userId
     ? "No snippets found for this user."
     : "No snippet found in your profile";
@@ -60,7 +60,7 @@ const ProfilePage = () => {
   useEffect(() => {
     const fetchProfileData = async () => {
       setIsLoading(true);
-      setAlert({ text: null, type: "danger" });
+      setAlert({ text: null, type: null });
       try {
         const token = localStorage.getItem("token");
 
@@ -120,7 +120,7 @@ const ProfilePage = () => {
                 <CustomAlert
                   text={alert.text}
                   type={alert.type}
-                  onClose={() => setAlert({ text: null, type: "danger" })}
+                  onClose={() => setAlert({ text: null, type: null })}
                 />
               </div>
             )}
