@@ -168,7 +168,8 @@ a:hover {
 }
 
 .pagination-btn {
-
+    min-width: 70px;
+    text-align: center;
     transition: all 0.3s ease;
 }
 

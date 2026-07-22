@@ -103,7 +103,7 @@ const ProfilePage = () => {
         <Row className="justify-content-center">
           <Col xs={12} lg={8}>
             {isLoading && (
-              <div className=" d-flex flex-column align-items-center justify-content-center py-5 mt-2">
+              <div className="d-flex flex-column align-items-center justify-content-center py-5 mt-2">
                 <Spinner
                   animation="border"
                   role="status"

@@ -1,8 +1,7 @@
 import MyButton from "../MyButton/MyButton";
 import { SnippetContext } from "../../context/SnippetContext/SnippetContext";
 
-const PaginationControls = ( {page, totalPages, setPage}) => {
- 
+const PaginationControls = ({ page, totalPages, setPage }) => {
   const handlePrevPage = () => {
     if (page > 1) setPage(page - 1);
   };
@@ -12,11 +11,11 @@ const PaginationControls = ( {page, totalPages, setPage}) => {
   };
 
   return (
-    <div className="d-flex justify-content-between align-items-center mt-4">
+    <div className="d-flex align-items-center justify-content-between mt-4">
       <MyButton
         onClick={handlePrevPage}
-        disabled={page === 1} 
-        className="pagination-btn"
+        disabled={page === 1}
+        className="pagination-btn pagination-btn-nav"
       >
         Previous
       </MyButton>
@@ -28,7 +27,7 @@ const PaginationControls = ( {page, totalPages, setPage}) => {
       <MyButton
         onClick={handleNextPage}
         disabled={page >= totalPages}
-        className="pagination-btn"
+        className="pagination-btn pagination-btn-nav"
       >
         Next
       </MyButton>

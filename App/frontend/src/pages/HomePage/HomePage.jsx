@@ -94,7 +94,7 @@ const HomePage = () => {
 
     if (isLoading) {
       return (
-        <div className=" d-flex flex-column align-items-center justify-content-center py-5 mt-2">
+        <div className="d-flex flex-column align-items-center justify-content-center py-5 mt-2">
           <Spinner
             animation="border"
             role="status"
@@ -142,7 +142,7 @@ const HomePage = () => {
                 </div>
 
                 {isLoggedIn && (
-                  <MyButton className=" px-3 py-1" onClick={() => openModal()}>
+                  <MyButton className="px-3 py-1" onClick={() => openModal()}>
                     <Plus size={16} /> New
                   </MyButton>
                 )}
