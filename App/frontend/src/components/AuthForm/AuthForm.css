@@ -3,7 +3,6 @@
     padding: 1rem;
 }
 
-
 .auth-card {
     width: 100%;
     max-width: 400px;
@@ -50,7 +49,6 @@
     color: var(--text-secondary);
 }
 
-
 .oauth-btn {
     display: flex;
     align-items: center;
@@ -71,7 +69,6 @@
 .oauth-btn:hover {
     background-color: var(--bg-hover-light);
 }
-
 
 .auth-divider {
     display: flex;
@@ -94,7 +91,6 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
 }
-
 
 .auth-link {
     color: var(--text-primary);
